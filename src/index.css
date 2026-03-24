@@ -1,0 +1,157 @@
+@import "tailwindcss";
+
+body {
+  margin: 0;
+}
+
+.signin-blob {
+  pointer-events: none;
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(56px);
+  opacity: 0.72;
+  will-change: transform, opacity;
+}
+
+.signin-blob-left {
+  left: -7.5rem;
+  top: -5.5rem;
+  height: 21rem;
+  width: 21rem;
+  background: radial-gradient(circle at 30% 30%, #c8a8ff 0%, #8b5cf6 38%, #6d28d9 74%, rgba(109, 40, 217, 0) 100%);
+  animation: signinBlobFloatA 17s ease-in-out infinite, signinBlobPulse 7s ease-in-out infinite;
+}
+
+.signin-blob-right {
+  right: -8.5rem;
+  bottom: -7.5rem;
+  height: 24rem;
+  width: 24rem;
+  background: radial-gradient(circle at 35% 35%, #ffd6ea 0%, #f9a8d4 45%, #c084fc 78%, rgba(192, 132, 252, 0) 100%);
+  animation: signinBlobFloatB 21s ease-in-out infinite, signinBlobPulse 9s ease-in-out infinite reverse;
+}
+
+.signin-blob-mid-left {
+  left: 8%;
+  top: 42%;
+  height: 14rem;
+  width: 14rem;
+  background: radial-gradient(circle at 35% 35%, #ddd1ff 0%, #a78bfa 48%, rgba(167, 139, 250, 0) 100%);
+  opacity: 0.56;
+  animation: signinBlobFloatA 23s ease-in-out infinite reverse, signinBlobPulse 8s ease-in-out infinite;
+}
+
+.signin-blob-mid-right {
+  right: 10%;
+  top: 26%;
+  height: 16rem;
+  width: 16rem;
+  background: radial-gradient(circle at 35% 35%, #ffe2f1 0%, #f0abfc 46%, rgba(240, 171, 252, 0) 100%);
+  opacity: 0.52;
+  animation: signinBlobFloatB 19s ease-in-out infinite, signinBlobPulse 11s ease-in-out infinite reverse;
+}
+
+.signin-blob-top {
+  left: 50%;
+  top: -6rem;
+  height: 12.5rem;
+  width: 12.5rem;
+  transform: translateX(-50%);
+  background: radial-gradient(circle at 35% 35%, #e9dcff 0%, #c4b5fd 55%, rgba(196, 181, 253, 0) 100%);
+  opacity: 0.45;
+  animation: signinBlobFloatA 27s ease-in-out infinite, signinBlobPulse 10s ease-in-out infinite;
+}
+
+@keyframes signinBlobFloatA {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+  }
+  22% {
+    transform: translate3d(26px, 18px, 0) scale(1.08) rotate(11deg);
+  }
+  45% {
+    transform: translate3d(12px, 44px, 0) scale(0.94) rotate(20deg);
+  }
+  72% {
+    transform: translate3d(-18px, 26px, 0) scale(1.04) rotate(7deg);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+  }
+}
+
+@keyframes signinBlobFloatB {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+  }
+  25% {
+    transform: translate3d(-32px, -12px, 0) scale(1.1) rotate(-8deg);
+  }
+  48% {
+    transform: translate3d(-16px, -34px, 0) scale(0.95) rotate(-16deg);
+  }
+  74% {
+    transform: translate3d(20px, -22px, 0) scale(1.06) rotate(-6deg);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+  }
+}
+
+@keyframes signinBlobPulse {
+  0%,
+  100% {
+    opacity: 0.62;
+  }
+  50% {
+    opacity: 0.84;
+  }
+}
+
+@media (max-width: 640px) {
+  .signin-blob-left {
+    left: -8.25rem;
+    top: -7rem;
+    height: 16rem;
+    width: 16rem;
+  }
+
+  .signin-blob-right {
+    right: -8rem;
+    bottom: -8rem;
+    height: 18rem;
+    width: 18rem;
+  }
+
+  .signin-blob-mid-left,
+  .signin-blob-mid-right {
+    height: 10.5rem;
+    width: 10.5rem;
+  }
+
+  .signin-blob-mid-left {
+    left: -2.5rem;
+    top: 52%;
+  }
+
+  .signin-blob-mid-right {
+    right: -3rem;
+    top: 30%;
+  }
+
+  .signin-blob-top {
+    top: -4.5rem;
+    height: 9.5rem;
+    width: 9.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .signin-blob-left,
+  .signin-blob-right,
+  .signin-blob-mid-left,
+  .signin-blob-mid-right,
+  .signin-blob-top {
+    animation: none;
+  }
+}
