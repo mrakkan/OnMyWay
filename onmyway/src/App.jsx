@@ -1,13 +1,19 @@
 import './App.css'
 import { useEffect, useState } from "react";
-import DriverLogin from './page/login'
-import DriverRegistration from './page/signup'
-import DriverSidebar from './page/sidebar'
-import DriverRequests from './page/my-request'
-import MyWorkPage from './page/my-works'
-import WorkDetail from './page/workdetail';
-import Profile from './page/profile';
-import Dashboard from './page/dashboard';
+import DriverLogin from './driver/login'
+import DriverRegistration from './driver/signup'
+import DriverSidebar from './driver/sidebar'
+import DriverRequests from './driver/my-request'
+import MyWorkPage from './driver/my-works'
+import WorkDetail from './driver/workdetail';
+import Profile from './driver/profile';
+import Dashboard from './driver/dashboard';
+import AdminLogin from './admin/login';
+import AdminSidebar from './admin/sidebar';
+import AdminDashboard from './admin/admin-dashboard';
+import ManageDriver from './admin/mange-driver';
+import DriverRequest from './admin/driver-request';
+import SeeProfile from './admin/profile';
 import { Navigate, Route, Routes } from 'react-router-dom'
 
 const mockRequests = [
@@ -86,6 +92,12 @@ function App() {
       <Route path="/my-works" element={<MyWorkPage myWork={myWork} />} />
       <Route path="/work/:id" element={<WorkDetail myWork={myWork} setMyWork={setMyWork} />} />
       <Route path="/profile" element={<Profile />} />
+      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/admin/sidebar" element={<AdminSidebar />} />
+      <Route path="/admin/dashboard" element={<AdminDashboard />} />
+      <Route path="/admin/manage-driver" element={<ManageDriver />} />
+      <Route path="/admin/driver-request" element={<DriverRequest />} />
+      <Route path="/admin/profile" element={<SeeProfile />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
 
     </Routes>

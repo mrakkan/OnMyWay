@@ -112,7 +112,7 @@ export default function DriverLogin() {
                                         setError("");
                                         localStorage.setItem("currentUser", JSON.stringify(foundUser));
                                         console.log("Login success 🚀", foundUser);
-                                        navigate("/sidebar");
+                                        navigate("/my-request");
                                     }}
                                 >
 

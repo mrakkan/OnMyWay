@@ -1,5 +1,18 @@
 import { useParams } from "react-router-dom";
 import DriverSidebar from "./sidebar";
+import { MapContainer, Marker, Polyline, Popup, TileLayer } from "react-leaflet";
+import L from "leaflet";
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+});
+
 const statusList = [
   {
     label: "Picking",
@@ -26,10 +39,33 @@ const statusList = [
     inactive: "bg-green-100 text-green-600 hover:bg-green-200 text-sm p-1",
   },
 ];
+
+const mockPointByText = {
+  "124 Oak Haven": [13.7428, 100.5252],
+  "St. Jude Medical Center": [13.7563, 100.5018],
+  "Willow Creek": [13.7749, 100.5422],
+  Pharmacy: [13.7669, 100.5371],
+  "Golden Age Club": [13.7846, 100.5662],
+  "North 5th Ave": [13.7894, 100.5527],
+};
+
+const getMockCoordinates = (locationText, fallback) => {
+  if (!locationText) return fallback;
+  return mockPointByText[locationText] || fallback;
+};
+
 export default function WorkDetail({ myWork, setMyWork }) {
   const { id } = useParams();
 
   const job = myWork.find((item) => item.id === Number(id));
+
+  const pickupCoordinates = getMockCoordinates(job?.pickup, [13.7563, 100.5018]);
+  const destinationCoordinates = getMockCoordinates(job?.destination, [13.7462, 100.5347]);
+  const mapCenter = [
+    (pickupCoordinates[0] + destinationCoordinates[0]) / 2,
+    (pickupCoordinates[1] + destinationCoordinates[1]) / 2,
+  ];
+  const googleMapsDirectionsUrl = `https://www.google.com/maps/dir/?api=1&origin=${pickupCoordinates[0]},${pickupCoordinates[1]}&destination=${destinationCoordinates[0]},${destinationCoordinates[1]}&travelmode=driving`;
 
   if (!job) {
     return <p className="p-10">Job not found</p>;
@@ -180,8 +216,30 @@ export default function WorkDetail({ myWork, setMyWork }) {
 
   {/* MAP */}
   <div className="bg-white rounded-xl shadow p-4">
-    <div className="bg-gray-200 h-64 rounded-lg flex items-center justify-center">
-      <p className="text-gray-500">Map</p>
+    <div className="h-64 rounded-lg overflow-hidden">
+      <MapContainer center={mapCenter} zoom={13} className="h-full w-full" scrollWheelZoom={false}>
+        <TileLayer
+          attribution='&copy; OpenStreetMap contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <Marker position={pickupCoordinates}>
+          <Popup>Pickup: {job.pickup}</Popup>
+        </Marker>
+        <Marker position={destinationCoordinates}>
+          <Popup>Destination: {job.destination}</Popup>
+        </Marker>
+        <Polyline positions={[pickupCoordinates, destinationCoordinates]} pathOptions={{ color: "#7C3AED", weight: 4 }} />
+      </MapContainer>
+    </div>
+    <div className="mt-4 flex justify-end">
+      <a
+        href={googleMapsDirectionsUrl}
+        target="_blank"
+        rel="noreferrer"
+        className="px-4 py-2 bg-purple-500 text-white rounded-lg font-semibold hover:bg-purple-700 transition"
+      >
+        Open in Google Maps
+      </a>
     </div>
   </div>
 
