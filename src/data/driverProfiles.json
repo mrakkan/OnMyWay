@@ -1,0 +1,103 @@
+{
+  "margaret-wilson": {
+    "name": "Martha Stewart",
+    "subtitle": "Certified Senior Companion & Volunteer",
+    "avatarLabel": "MS",
+    "avatarTone": "from-sky-300 to-blue-500",
+    "experience": "8 yrs",
+    "rating": 4.9,
+    "safeRides": "1,240",
+    "about": "I believe that mobility is freedom. Since retiring from nursing in 2016, I have dedicated my time to ensuring my neighbors in the Greater Metro area can attend their appointments and social gatherings with dignity and ease. I specialize in assisting users with foldable walkers and providing a calm, conversational environment. Your comfort is my primary goal.",
+    "tags": ["Nursing Background", "CPR Certified", "Wheelchair Assist", "Bilingual English/Spanish"],
+    "regions": "Downtown, North Hills, Oakwood, and the Medical District.",
+    "hours": [
+      ["Mon - Thu", "8:00 AM - 4:00 PM"],
+      ["Friday", "8:00 AM - 12:00 PM"],
+      ["Weekends", "By special request"]
+    ],
+    "reviews": [
+      {
+        "name": "Eleanor P.",
+        "initials": "EP",
+        "text": "Martha is a true gem. She helped me into the car and even waited until I was safely checked in at my doctor's office. She drives very carefully and is a great listener."
+      },
+      {
+        "name": "Harold J.",
+        "initials": "HJ",
+        "text": "Very punctual and professional. The car was spotless and very easy to get into. Highly recommend Martha for anyone needing a little extra assistance."
+      }
+    ]
+  },
+  "robert-chen": {
+    "name": "Robert Chen",
+    "subtitle": "Retired Teacher & Community Driver",
+    "avatarLabel": "RC",
+    "avatarTone": "from-slate-300 to-slate-600",
+    "experience": "6 yrs",
+    "rating": 4.7,
+    "safeRides": "840",
+    "about": "I love helping seniors stay connected to their routines. I am CPR certified, patient, and familiar with most clinics and pharmacies in town. My rides are calm, clean, and always punctual.",
+    "tags": ["CPR Certified", "Patient Companion", "Errand Friendly"],
+    "regions": "Westgate, Riverpoint, Midtown, and Greenway Commons.",
+    "hours": [
+      ["Mon - Thu", "9:00 AM - 5:00 PM"],
+      ["Friday", "9:00 AM - 2:00 PM"],
+      ["Weekends", "Unavailable"]
+    ],
+    "reviews": [
+      {
+        "name": "Linda K.",
+        "initials": "LK",
+        "text": "Robert is kind and very respectful. He made the whole trip stress free."
+      }
+    ]
+  },
+  "elena-rodriguez": {
+    "name": "Elena Rodriguez",
+    "subtitle": "Bilingual Care Driver & Mobility Support",
+    "avatarLabel": "ER",
+    "avatarTone": "from-yellow-200 to-orange-300",
+    "experience": "10 yrs",
+    "rating": 5,
+    "safeRides": "2,010",
+    "about": "I have over 10 years of caregiving and transportation support experience. I am fluent in English and Spanish and can assist with wheelchair loading and appointment check-ins.",
+    "tags": ["Bilingual", "Wheelchair Accessible", "Clinic Escort"],
+    "regions": "Lakeside, Central Park, Eastborough, and Harborview.",
+    "hours": [
+      ["Mon - Thu", "7:30 AM - 3:30 PM"],
+      ["Friday", "7:30 AM - 1:30 PM"],
+      ["Weekends", "By request"]
+    ],
+    "reviews": [
+      {
+        "name": "Carlos M.",
+        "initials": "CM",
+        "text": "Elena is excellent and always on time. We trust her completely."
+      }
+    ]
+  },
+  "arthur-sterling": {
+    "name": "Arthur Sterling",
+    "subtitle": "Reliable Hospital Route Specialist",
+    "avatarLabel": "AS",
+    "avatarTone": "from-cyan-300 to-sky-500",
+    "experience": "7 yrs",
+    "rating": 4.8,
+    "safeRides": "956",
+    "about": "I know the fastest and safest routes to local hospitals and clinics. I help passengers in and out of the vehicle and wait if needed for short appointments.",
+    "tags": ["Hospital Routes", "On-Time Service", "Companion Wait"],
+    "regions": "North Point, Midtown, Elm Square, and South Medical Campus.",
+    "hours": [
+      ["Mon - Thu", "8:30 AM - 4:30 PM"],
+      ["Friday", "8:30 AM - 1:00 PM"],
+      ["Weekends", "Unavailable"]
+    ],
+    "reviews": [
+      {
+        "name": "Nora T.",
+        "initials": "NT",
+        "text": "Arthur was professional and calm. The ride felt very safe and smooth."
+      }
+    ]
+  }
+}

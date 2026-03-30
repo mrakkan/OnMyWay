@@ -1,15 +1,100 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import BackgroundGradientAnimation from '../components/BackgroundGradientAnimation'
+import { registerMockUser } from '../utils/mockAuthStorage'
 
 function SignUpPage() {
-  return (
-    <div className="relative min-h-screen overflow-hidden bg-[#f3eff7] text-slate-800">
-      <div className="signin-blob signin-blob-left" />
-      <div className="signin-blob signin-blob-right" />
-      <div className="signin-blob signin-blob-mid-left" />
-      <div className="signin-blob signin-blob-mid-right" />
-      <div className="signin-blob signin-blob-top" />
+  const navigate = useNavigate()
+  const [formValues, setFormValues] = useState({
+    fullName: '',
+    dateOfBirth: '',
+    phoneNumber: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    streetAddress: '',
+    apartment: '',
+    city: '',
+    province: 'กรุงเทพมหานคร',
+    postalCode: '',
+    acceptTerms: false,
+  })
+  const [errorMessage, setErrorMessage] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
 
-      <div className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-8 py-6">
+  const handleChange = (field) => (event) => {
+    const isCheckbox = event.target.type === 'checkbox'
+    const value = isCheckbox ? event.target.checked : event.target.value
+    setFormValues((current) => ({ ...current, [field]: value }))
+  }
+
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    setErrorMessage('')
+    setSuccessMessage('')
+
+    if (!formValues.acceptTerms) {
+      setErrorMessage('Please accept the Terms of Service and Privacy Policy before creating your account.')
+      return
+    }
+
+    if (formValues.password.length < 6) {
+      setErrorMessage('Password must be at least 6 characters long.')
+      return
+    }
+
+    if (formValues.password !== formValues.confirmPassword) {
+      setErrorMessage('Password and confirmation do not match.')
+      return
+    }
+
+    try {
+      registerMockUser({
+        fullName: formValues.fullName,
+        dateOfBirth: formValues.dateOfBirth,
+        phoneNumber: formValues.phoneNumber,
+        email: formValues.email,
+        password: formValues.password,
+        streetAddress: formValues.streetAddress,
+        apartment: formValues.apartment,
+        city: formValues.city,
+        province: formValues.province,
+        postalCode: formValues.postalCode,
+      })
+
+      setSuccessMessage('Account created! Redirecting you to sign in...')
+
+      window.setTimeout(() => {
+        navigate('/signin', {
+          state: {
+            signupSuccess: true,
+            email: formValues.email.trim().toLowerCase(),
+          },
+        })
+      }, 700)
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Unable to create account. Please try again.')
+    }
+  }
+
+  return (
+    <BackgroundGradientAnimation
+      gradientBackgroundStart="rgb(243, 239, 247)"
+      gradientBackgroundEnd="rgb(111, 76, 224)"
+      firstColor="122, 90, 248"
+      secondColor="147, 51, 234"
+      thirdColor="196, 181, 253"
+      fourthColor="129, 140, 248"
+      fifthColor="168, 85, 247"
+      pointerColor="124, 58, 237"
+      size="88%"
+      blendingValue="hard-light"
+      className="z-0"
+      interactive
+    >
+      <div className="relative min-h-screen overflow-hidden text-slate-800">
+
+        <div className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-8 py-6">
         <div className="flex items-center gap-2 text-violet-700">
           <span className="text-2xl font-bold tracking-tight">OnMyWay</span>
         </div>
@@ -52,7 +137,10 @@ function SignUpPage() {
         </section>
 
         <section className="rounded-[2rem] border border-[#e9e2f0] bg-[#f2edf7] p-8 shadow-[0_18px_45px_-35px_rgba(76,49,134,0.5)]">
-          <form className="space-y-8">
+          <form className="space-y-8" onSubmit={handleSubmit}>
+            {successMessage && <p className="rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{successMessage}</p>}
+            {errorMessage && <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{errorMessage}</p>}
+
             <div>
               <h2 className="mb-5 flex items-center gap-3 text-3xl font-black text-slate-800">
                 <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white">1</span>
@@ -61,19 +149,27 @@ function SignUpPage() {
               <div className="grid gap-4 md:grid-cols-2">
                 <label className="block">
                   <span className="mb-2 block text-sm font-semibold text-slate-700">Full Name</span>
-                  <input className="w-full rounded-full bg-[#e5dfeb] px-5 py-3.5 text-base placeholder:text-slate-500 focus:outline-none" placeholder="e.g. Itsaree tamchareon" />
+                  <input value={formValues.fullName} onChange={handleChange('fullName')} required className="w-full rounded-full bg-[#e5dfeb] px-5 py-3.5 text-base placeholder:text-slate-500 focus:outline-none" placeholder="e.g. Itsaree tamchareon" />
                 </label>
                 <label className="block">
                   <span className="mb-2 block text-sm font-semibold text-slate-700">Date of Birth</span>
-                  <input className="w-full rounded-full bg-[#e5dfeb] px-5 py-3.5 text-base placeholder:text-slate-500 focus:outline-none" placeholder="mm/dd/yyyy" />
+                  <input value={formValues.dateOfBirth} onChange={handleChange('dateOfBirth')} required type="date" className="w-full rounded-full bg-[#e5dfeb] px-5 py-3.5 text-base placeholder:text-slate-500 focus:outline-none" />
                 </label>
                 <label className="block">
                   <span className="mb-2 block text-sm font-semibold text-slate-700">Phone Number</span>
-                  <input className="w-full rounded-full bg-[#e5dfeb] px-5 py-3.5 text-base placeholder:text-slate-500 focus:outline-none" placeholder="065-999157" />
+                  <input value={formValues.phoneNumber} onChange={handleChange('phoneNumber')} required className="w-full rounded-full bg-[#e5dfeb] px-5 py-3.5 text-base placeholder:text-slate-500 focus:outline-none" placeholder="065-999157" />
                 </label>
                 <label className="block">
                   <span className="mb-2 block text-sm font-semibold text-slate-700">Email Address</span>
-                  <input className="w-full rounded-full bg-[#e5dfeb] px-5 py-3.5 text-base placeholder:text-slate-500 focus:outline-none" placeholder="seaman@example.com" />
+                  <input value={formValues.email} onChange={handleChange('email')} required type="email" className="w-full rounded-full bg-[#e5dfeb] px-5 py-3.5 text-base placeholder:text-slate-500 focus:outline-none" placeholder="seaman@example.com" />
+                </label>
+                <label className="block">
+                  <span className="mb-2 block text-sm font-semibold text-slate-700">Password</span>
+                  <input value={formValues.password} onChange={handleChange('password')} required type="password" className="w-full rounded-full bg-[#e5dfeb] px-5 py-3.5 text-base placeholder:text-slate-500 focus:outline-none" placeholder="At least 6 characters" />
+                </label>
+                <label className="block">
+                  <span className="mb-2 block text-sm font-semibold text-slate-700">Confirm Password</span>
+                  <input value={formValues.confirmPassword} onChange={handleChange('confirmPassword')} required type="password" className="w-full rounded-full bg-[#e5dfeb] px-5 py-3.5 text-base placeholder:text-slate-500 focus:outline-none" placeholder="Re-enter password" />
                 </label>
               </div>
             </div>
@@ -86,19 +182,19 @@ function SignUpPage() {
               <div className="grid gap-4 md:grid-cols-2">
                 <label className="block md:col-span-2">
                   <span className="mb-2 block text-sm font-semibold text-slate-700">Street Address</span>
-                  <input className="w-full rounded-full bg-[#e5dfeb] px-5 py-3.5 text-base placeholder:text-slate-500 focus:outline-none" placeholder="123 Serenity Lane" />
+                  <input value={formValues.streetAddress} onChange={handleChange('streetAddress')} required className="w-full rounded-full bg-[#e5dfeb] px-5 py-3.5 text-base placeholder:text-slate-500 focus:outline-none" placeholder="123 Serenity Lane" />
                 </label>
                 <label className="block">
                   <span className="mb-2 block text-sm font-semibold text-slate-700">Apartment / Suite</span>
-                  <input className="w-full rounded-full bg-[#e5dfeb] px-5 py-3.5 text-base placeholder:text-slate-500 focus:outline-none" placeholder="Apt 4B (Optional)" />
+                  <input value={formValues.apartment} onChange={handleChange('apartment')} className="w-full rounded-full bg-[#e5dfeb] px-5 py-3.5 text-base placeholder:text-slate-500 focus:outline-none" placeholder="Apt 4B (Optional)" />
                 </label>
                 <label className="block">
                   <span className="mb-2 block text-sm font-semibold text-slate-700">City</span>
-                  <input className="w-full rounded-full bg-[#e5dfeb] px-5 py-3.5 text-base placeholder:text-slate-500 focus:outline-none" placeholder="บางพลี" />
+                  <input value={formValues.city} onChange={handleChange('city')} required className="w-full rounded-full bg-[#e5dfeb] px-5 py-3.5 text-base placeholder:text-slate-500 focus:outline-none" placeholder="บางพลี" />
                 </label>
                 <label className="block">
                   <span className="mb-2 block text-sm font-semibold text-slate-700">State / Province (จังหวัด)</span>
-                  <select className="w-full rounded-full bg-[#e5dfeb] px-5 py-3.5 text-base text-slate-700 focus:outline-none">
+                  <select value={formValues.province} onChange={handleChange('province')} className="w-full rounded-full bg-[#e5dfeb] px-5 py-3.5 text-base text-slate-700 focus:outline-none">
                     <option>กรุงเทพมหานคร</option>
                     <option>เชียงใหม่</option>
                     <option>ขอนแก่น</option>
@@ -108,14 +204,14 @@ function SignUpPage() {
                 </label>
                 <label className="block">
                   <span className="mb-2 block text-sm font-semibold text-slate-700">Postal Code</span>
-                  <input className="w-full rounded-full bg-[#e5dfeb] px-5 py-3.5 text-base placeholder:text-slate-500 focus:outline-none" placeholder="999157" />
+                  <input value={formValues.postalCode} onChange={handleChange('postalCode')} required className="w-full rounded-full bg-[#e5dfeb] px-5 py-3.5 text-base placeholder:text-slate-500 focus:outline-none" placeholder="999157" />
                 </label>
               </div>
             </div>
 
             <div className="rounded-3xl bg-[#e8dff3] p-5 text-sm text-slate-600">
               <label className="flex items-start gap-3">
-                <input type="checkbox" className="mt-0.5 h-4 w-4 rounded border-violet-300" />
+                <input checked={formValues.acceptTerms} onChange={handleChange('acceptTerms')} type="checkbox" className="mt-0.5 h-4 w-4 rounded border-violet-300" />
                 <span>
                   I agree to the <span className="font-semibold text-violet-700">Terms of Service</span> and{' '}
                   <span className="font-semibold text-violet-700">Privacy Policy</span>. I understand that my data is protected under HIPAA-grade security standards.
@@ -135,16 +231,17 @@ function SignUpPage() {
             </p>
           </form>
         </section>
-      </main>
+        </main>
 
-      <footer className="relative z-10 border-t border-slate-200 px-8 py-6 text-sm text-slate-500">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4">
-          <p>
-            <span className="font-semibold text-slate-600">OnMyWay</span>
-          </p>
-        </div>
-      </footer>
-    </div>
+        <footer className="relative z-10 border-t border-slate-200 px-8 py-6 text-sm text-slate-500">
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4">
+            <p>
+              <span className="font-semibold text-slate-600">OnMyWay</span>
+            </p>
+          </div>
+        </footer>
+      </div>
+    </BackgroundGradientAnimation>
   )
 }
 

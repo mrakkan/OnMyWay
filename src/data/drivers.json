@@ -1,0 +1,42 @@
+[
+  {
+    "id": "margaret-wilson",
+    "name": "Margaret Wilson",
+    "price": 15,
+    "rating": 4.9,
+    "rides": 128,
+    "bio": "I enjoy helping neighbors reach their medical appointments safely. I drive a spacious SUV with easy entry and exit.",
+    "avatarLabel": "MW",
+    "avatarTone": "from-rose-200 to-amber-200"
+  },
+  {
+    "id": "robert-chen",
+    "name": "Robert Chen",
+    "price": 12,
+    "rating": 4.7,
+    "rides": 84,
+    "bio": "Retired teacher who loves conversation. I am CPR certified and very patient. I can help with groceries too!",
+    "avatarLabel": "RC",
+    "avatarTone": "from-slate-300 to-slate-500"
+  },
+  {
+    "id": "elena-rodriguez",
+    "name": "Elena Rodriguez",
+    "price": 18,
+    "rating": 5,
+    "rides": 210,
+    "bio": "Bilingual driver with 10 years of professional caregiving experience. My vehicle is wheelchair accessible.",
+    "avatarLabel": "ER",
+    "avatarTone": "from-yellow-200 to-orange-200"
+  },
+  {
+    "id": "arthur-sterling",
+    "name": "Arthur Sterling",
+    "price": 14,
+    "rating": 4.8,
+    "rides": 56,
+    "bio": "Very punctual and reliable. I know all the local hospital shortcuts. Happy to wait during your appointment.",
+    "avatarLabel": "AS",
+    "avatarTone": "from-cyan-300 to-sky-500"
+  }
+]
