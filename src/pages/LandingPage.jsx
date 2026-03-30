@@ -1,5 +1,7 @@
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import styled, { keyframes } from 'styled-components'
+import TextGenerateEffect from '../components/TextGenerateEffect'
 import cityImage from '../assets/city.jpg'
 
 const floatLeft = keyframes`
@@ -22,6 +24,16 @@ const fadeUp = keyframes`
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+`
+
+const bounceDown = keyframes`
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(8px);
   }
 `
 
@@ -172,7 +184,7 @@ const Title = styled.h1`
   color: #1f163e;
 `
 
-const Subtitle = styled.p`
+const Subtitle = styled.div`
   margin: 0 auto;
   max-width: 760px;
   font-size: clamp(1rem, 1.4vw, 1.25rem);
@@ -482,8 +494,304 @@ const StatLabel = styled.p`
   font-weight: 700;
 `
 
+const ScrollHintWrap = styled.div`
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 5vw, 56px) 46px;
+  display: flex;
+  justify-content: center;
+`
+
+const ScrollHintButton = styled.button`
+  border: 0;
+  cursor: pointer;
+  border-radius: 999px;
+  padding: 10px 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #3c2a73;
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  background: rgba(255, 255, 255, 0.38);
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  backdrop-filter: blur(6px);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+
+  .arrow {
+    display: inline-flex;
+    animation: ${bounceDown} 1.35s ease-in-out infinite;
+  }
+`
+
+const LiveApiSection = styled.section`
+  max-width: 1060px;
+  margin: 0 auto 78px;
+  padding: 34px clamp(20px, 5vw, 56px) 0;
+  opacity: ${({ $visible }) => ($visible ? 1 : 0)};
+  transform: translateY(${({ $visible }) => ($visible ? '0' : '44px')});
+  transition: opacity 0.75s ease, transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+`
+
+const LiveHeader = styled.div`
+  text-align: center;
+  margin-bottom: 18px;
+
+  h2 {
+    margin: 0;
+    color: #1f163e;
+    font-size: clamp(1.65rem, 3vw, 2.45rem);
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: 10px auto 0;
+    max-width: 760px;
+    color: #33275f;
+    opacity: 0.9;
+    font-weight: 500;
+  }
+`
+
+const LiveGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1.1fr 2fr;
+  gap: 14px;
+
+  @media (max-width: 920px) {
+    grid-template-columns: 1fr;
+  }
+`
+
+const LivePrimaryCard = styled.article`
+  border-radius: 22px;
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: linear-gradient(150deg, rgba(121, 73, 255, 0.2), rgba(255, 255, 255, 0.38));
+  backdrop-filter: blur(8px);
+  box-shadow: 0 24px 40px -34px rgba(46, 19, 121, 0.65);
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+
+  .label {
+    margin: 0;
+    color: #4d2ab4;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+  }
+
+  .temp {
+    margin: 10px 0 2px;
+    font-size: clamp(2rem, 3vw, 2.6rem);
+    color: #1f163e;
+    font-weight: 900;
+  }
+
+  .status {
+    margin: 0;
+    color: #2c2156;
+    font-weight: 700;
+  }
+
+  .meta {
+    margin-top: 12px;
+    display: grid;
+    gap: 8px;
+    color: #3a2e6b;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+`
+
+const DailyCards = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+
+  @media (max-width: 920px) {
+    grid-template-columns: 1fr;
+  }
+`
+
+const DailyCard = styled.article`
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.36);
+  border: 1px solid rgba(255, 255, 255, 0.54);
+  backdrop-filter: blur(8px);
+  padding: 16px;
+  box-shadow: 0 18px 34px -30px rgba(35, 13, 94, 0.55);
+  opacity: ${({ $visible }) => ($visible ? 1 : 0)};
+  transform: translateY(${({ $visible }) => ($visible ? '0' : '16px')});
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  transition-delay: ${({ $delayMs }) => `${$delayMs}ms`};
+
+  .day {
+    margin: 0;
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    color: #5a49a0;
+    text-transform: uppercase;
+    font-weight: 800;
+  }
+
+  .desc {
+    margin: 8px 0 10px;
+    font-size: 1.02rem;
+    color: #1f163e;
+    font-weight: 800;
+  }
+
+  .temps {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #33275f;
+    font-weight: 700;
+  }
+
+  .rain {
+    margin: 8px 0 0;
+    font-size: 0.82rem;
+    color: #4b3b85;
+    font-weight: 700;
+  }
+`
+
+const LiveFootnote = styled.p`
+  margin: 14px 0 0;
+  text-align: center;
+  color: #4d4281;
+  font-size: 0.8rem;
+  font-weight: 600;
+`
+
+function getWeatherDescription(code) {
+  if (code === 0) {
+    return 'Clear Sky'
+  }
+
+  if ([1, 2].includes(code)) {
+    return 'Partly Cloudy'
+  }
+
+  if (code === 3) {
+    return 'Overcast'
+  }
+
+  if ([45, 48].includes(code)) {
+    return 'Foggy'
+  }
+
+  if ([51, 53, 55, 56, 57].includes(code)) {
+    return 'Drizzle'
+  }
+
+  if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code)) {
+    return 'Rainy'
+  }
+
+  if ([71, 73, 75, 77, 85, 86].includes(code)) {
+    return 'Snow'
+  }
+
+  if ([95, 96, 99].includes(code)) {
+    return 'Thunderstorm'
+  }
+
+  return 'Mixed Conditions'
+}
+
 export default function LandingPage() {
   const navigate = useNavigate()
+  const liveSectionRef = useRef(null)
+  const [liveConditions, setLiveConditions] = useState(null)
+  const [isLoadingLiveConditions, setIsLoadingLiveConditions] = useState(true)
+  const [liveConditionsError, setLiveConditionsError] = useState('')
+  const [isLiveSectionVisible, setIsLiveSectionVisible] = useState(false)
+
+  useEffect(() => {
+    const abortController = new AbortController()
+
+    async function loadLiveConditions() {
+      try {
+        setIsLoadingLiveConditions(true)
+        setLiveConditionsError('')
+
+        const response = await fetch(
+          'https://api.open-meteo.com/v1/forecast?latitude=13.7563&longitude=100.5018&current=temperature_2m,rain,wind_speed_10m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto',
+          { signal: abortController.signal },
+        )
+
+        if (!response.ok) {
+          throw new Error('Unable to fetch travel conditions right now.')
+        }
+
+        const payload = await response.json()
+        setLiveConditions(payload)
+      } catch (error) {
+        if (error.name === 'AbortError') {
+          return
+        }
+
+        setLiveConditionsError('Unable to load live travel conditions right now. Please try again shortly.')
+      } finally {
+        setIsLoadingLiveConditions(false)
+      }
+    }
+
+    loadLiveConditions()
+
+    return () => {
+      abortController.abort()
+    }
+  }, [])
+
+  useEffect(() => {
+    const sectionElement = liveSectionRef.current
+
+    if (!sectionElement) {
+      return undefined
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setIsLiveSectionVisible(true)
+        }
+      },
+      { threshold: 0.26 },
+    )
+
+    observer.observe(sectionElement)
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [])
+
+  const scrollToLiveSection = () => {
+    liveSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  const forecastCards =
+    liveConditions?.daily?.time
+      ?.slice(0, 3)
+      ?.map((date, index) => ({
+        date,
+        weekday: new Date(date).toLocaleDateString('en-US', { weekday: 'short' }),
+        weatherCode: liveConditions?.daily?.weather_code?.[index],
+        maxTemp: liveConditions?.daily?.temperature_2m_max?.[index],
+        minTemp: liveConditions?.daily?.temperature_2m_min?.[index],
+        rainChance: liveConditions?.daily?.precipitation_probability_max?.[index],
+      })) ?? []
+
+  const currentWeather = liveConditions?.current
 
   return (
     <Page>
@@ -502,10 +810,16 @@ export default function LandingPage() {
 
       <Hero>
         <Badge>Trusted Senior Ride Concierge</Badge>
-        <Title>Comfortable Rides, Caring Drivers, Right On Time.</Title>
+        <Title>
+          <TextGenerateEffect
+            words="Comfortable Rides, Caring Drivers, Right On Time."
+            duration={0.8}
+            staggerDelay={0.17}
+            className="font-medium"
+          />
+          </Title>
         <Subtitle>
-          Coordinate safe rides for appointments, hospital visits, and daily errands with drivers trained for
-          elder-friendly assistance.
+          Coordinate safe rides for appointments, hospital visits, and daily errands with drivers trained for elder-friendly assistance.
         </Subtitle>
 
         <Ctas>
@@ -559,6 +873,71 @@ export default function LandingPage() {
           <StatLabel>Live concierge support</StatLabel>
         </StatCard>
       </Stats>
+
+      <ScrollHintWrap>
+        <ScrollHintButton type="button">
+          <span>See today travel conditions</span>
+          <span className="arrow" aria-hidden>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2">
+              <path d="M12 5v14" />
+              <path d="m6 13 6 6 6-6" />
+            </svg>
+          </span>
+        </ScrollHintButton>
+      </ScrollHintWrap>
+
+      <LiveApiSection ref={liveSectionRef} $visible={isLiveSectionVisible}>
+        <LiveHeader>
+          <h2>Live Ride Conditions in Bangkok</h2>
+          <p>
+            Real-time weather helps riders and families plan safer pickup times for hospital visits and daily
+            appointments.
+          </p>
+        </LiveHeader>
+
+        {isLoadingLiveConditions ? (
+          <LivePrimaryCard>
+            <p className="label">Loading Live Data</p>
+            <p className="status">Checking current travel conditions...</p>
+          </LivePrimaryCard>
+        ) : liveConditionsError ? (
+          <LivePrimaryCard>
+            <p className="label">Live Data Unavailable</p>
+            <p className="status">{liveConditionsError}</p>
+          </LivePrimaryCard>
+        ) : (
+          <LiveGrid>
+            <LivePrimaryCard>
+              <p className="label">Current Conditions</p>
+              <p className="temp">{Math.round(currentWeather?.temperature_2m ?? 0)}°C</p>
+              <p className="status">{getWeatherDescription(currentWeather?.weather_code)}</p>
+              <div className="meta">
+                <span>Wind: {Math.round(currentWeather?.wind_speed_10m ?? 0)} km/h</span>
+                <span>Rain now: {Math.round(currentWeather?.rain || 0)} mm</span>
+              </div>
+            </LivePrimaryCard>
+
+            <DailyCards>
+              {forecastCards.map((forecast, index) => (
+                <DailyCard
+                  key={`${forecast.date}-${forecast.weekday}`}
+                  $visible={isLiveSectionVisible}
+                  $delayMs={index * 110}
+                >
+                  <p className="day">{forecast.weekday}</p>
+                  <p className="desc">{getWeatherDescription(forecast.weatherCode)}</p>
+                  <p className="temps">
+                    {Math.round(forecast.maxTemp ?? 0)}° / {Math.round(forecast.minTemp ?? 0)}°
+                  </p>
+                  <p className="rain">Rain chance: {Math.round(forecast.rainChance ?? 0)}%</p>
+                </DailyCard>
+              ))}
+            </DailyCards>
+          </LiveGrid>
+        )}
+
+        <LiveFootnote>Data source: Open-Meteo Forecast API</LiveFootnote>
+      </LiveApiSection>
     </Page>
   )
 }

@@ -4,9 +4,14 @@ import { Link } from "react-router-dom"
 import scheduleData from "../data/schedule.json"
 import { getPendingRides, initializePendingRideSession } from "../utils/pendingRidesStorage"
 
+const DEFAULT_VISIBLE_UPCOMING = 4
+const DEFAULT_VISIBLE_HISTORY = 4
+
 export default function MySchedulePage() {
   const { currentStatus, upcomingTravels, monthlySummary, recentHistory } = scheduleData
   const [localPendingRides, setLocalPendingRides] = useState([])
+  const [showAllUpcoming, setShowAllUpcoming] = useState(false)
+  const [showAllHistory, setShowAllHistory] = useState(false)
 
   useEffect(() => {
     initializePendingRideSession()
@@ -17,8 +22,28 @@ export default function MySchedulePage() {
     return [...localPendingRides, ...upcomingTravels]
   }, [localPendingRides, upcomingTravels])
 
+  const canExpandUpcoming = mergedUpcomingTravels.length > DEFAULT_VISIBLE_UPCOMING
+  const visibleUpcomingTravels = useMemo(() => {
+    if (showAllUpcoming) {
+      return mergedUpcomingTravels
+    }
+
+    return mergedUpcomingTravels.slice(0, DEFAULT_VISIBLE_UPCOMING)
+  }, [mergedUpcomingTravels, showAllUpcoming])
+
+  const canExpandHistory = recentHistory.length > DEFAULT_VISIBLE_HISTORY
+  const visibleRecentHistory = useMemo(() => {
+    if (showAllHistory) {
+      return recentHistory
+    }
+
+    return recentHistory.slice(0, DEFAULT_VISIBLE_HISTORY)
+  }, [recentHistory, showAllHistory])
+
+  const primaryChatDriverId = localPendingRides[0]?.driverId || 'margaret-wilson'
+
   return (
-    <div className="min-h-screen bg-[#f3eff7] pb-20 pt-8">
+    <div className="min-h-screen pb-20 pt-8">
       <div className="mx-auto max-w-[1240px] px-5 lg:px-8">
         
         {/* Header Section */}
@@ -94,9 +119,12 @@ export default function MySchedulePage() {
                         <Link to="/track-driver" className="rounded-full bg-violet-600 px-6 py-2.5 text-sm font-semibold text-white shadow hover:bg-violet-700 text-center">
                           Track Live
                         </Link>
-                        <button className="rounded-full bg-slate-200/50 px-6 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-200 text-center">
-                          Call Driver
-                        </button>
+                        <Link
+                          to={`/chat/${primaryChatDriverId}`}
+                          className="rounded-full bg-slate-200/50 px-6 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-200 text-center"
+                        >
+                          Chat with Driver
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -111,18 +139,33 @@ export default function MySchedulePage() {
                   <CalendarIcon className="h-6 w-6 text-violet-600" />
                   Upcoming Travels
                 </h2>
-                <button className="text-sm font-bold text-violet-600 hover:text-violet-800">
-                  View All
-                </button>
+                {canExpandUpcoming ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowAllUpcoming((current) => !current)}
+                    className="text-sm font-bold text-violet-600 hover:text-violet-800"
+                  >
+                    {showAllUpcoming ? "Show Less" : "View All"}
+                  </button>
+                ) : (
+                  <span className="text-xs font-bold uppercase tracking-wide text-slate-400">All visible</span>
+                )}
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                {mergedUpcomingTravels.map((travel) => (
+              <div className="grid gap-4 sm:grid-cols-2 sm:[grid-auto-rows:1fr]">
+                {visibleUpcomingTravels.map((travel) => {
+                  const statusLabel = String(travel.status || '').toLowerCase()
+                  const toneClass = statusLabel === 'pending' ? 'sun-card--pending' : 'sun-card--accepted'
+                  const isPending = statusLabel === 'pending'
+                  const travelDriverId = travel.driverId || localPendingRides.find((ride) => ride.id === travel.id)?.driverId || primaryChatDriverId
+                  const actionHref = isPending ? `/driver/${travelDriverId}/request` : `/driver/${travelDriverId}`
+
+                  return (
                   <div
                     key={travel.id}
-                    className={`flex flex-col justify-between overflow-hidden rounded-3xl bg-white p-6 shadow-sm border-l-4 ${travel.borderStyle === "yellow" ? "border-l-yellow-400" : "border-l-violet-600"}`}
+                    className={`sun-card sun-card--interactive ${toneClass} h-full flex flex-col justify-between p-6`}
                   >
-                    <div>
+                    <div className="flex-1">
                       <div className="mb-3 flex items-center justify-between">
                         <span className="text-xs font-bold uppercase tracking-wider text-slate-500">{travel.date}</span>
                         <span className={`rounded-full px-3 py-1 text-xs font-semibold ${travel.status === "Pending" ? "bg-yellow-100 text-yellow-800" : "bg-violet-200 text-violet-800"}`}>
@@ -137,11 +180,15 @@ export default function MySchedulePage() {
                         <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-violet-700">Driver: {travel.driverName}</p>
                       )}
                     </div>
-                    <button className="mt-6 w-full rounded-2xl border-2 border-slate-100 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">
-                      {travel.status === "Pending" ? "Edit Details" : "View Driver"}
-                    </button>
+                    <Link
+                      to={actionHref}
+                      className="mt-6 w-full rounded-2xl border-2 border-slate-100 py-2.5 text-center text-sm font-bold text-slate-700 hover:bg-slate-50"
+                    >
+                      {isPending ? "Edit Details" : "View Driver"}
+                    </Link>
                   </div>
-                ))}
+                  )
+                })}
               </div>
             </section>
           </div>
@@ -172,12 +219,23 @@ export default function MySchedulePage() {
 
             {/* Recent History */}
             <div>
-              <h2 className="mb-4 flex items-center gap-2 text-lg font-bold text-slate-800">
-                <CalendarIcon className="h-5 w-5 text-slate-500" />
-                Recent History
-              </h2>
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <h2 className="flex items-center gap-2 text-lg font-bold text-slate-800">
+                  <CalendarIcon className="h-5 w-5 text-slate-500" />
+                  Recent History
+                </h2>
+                {canExpandHistory ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowAllHistory((current) => !current)}
+                    className="text-xs font-bold uppercase tracking-wide text-violet-700 hover:text-violet-900"
+                  >
+                    {showAllHistory ? "Show Less" : "View All"}
+                  </button>
+                ) : null}
+              </div>
               <div className="space-y-4">
-                {recentHistory.map((history) => (
+                {visibleRecentHistory.map((history) => (
                   <div key={history.id} className="flex items-center gap-4">
                     <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full ${history.type === "success" ? "bg-emerald-100 text-emerald-600" : "bg-red-100 text-red-600"}`}>
                       {history.type === "success" ? <Check className="h-5 w-5" /> : <X className="h-5 w-5" />}

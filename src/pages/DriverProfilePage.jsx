@@ -1,5 +1,6 @@
 import { Link, useParams } from 'react-router-dom'
 import driverProfiles from '../data/driverProfiles.json'
+import { LightWavesBackground } from '../components/LightWavesBackground'
 
 function DriverProfilePage() {
   const { driverId } = useParams()
@@ -13,7 +14,7 @@ function DriverProfilePage() {
             <span aria-hidden="true">←</span>
             Back to Drivers
           </Link>
-
+    
           <article className="grid gap-5 rounded-[2rem] bg-[#ece7f1] p-5 md:grid-cols-[10rem_1fr] md:items-center lg:p-6">
             <div className="relative">
               <div
@@ -94,7 +95,7 @@ function DriverProfilePage() {
 
             <div className="mt-4 space-y-4">
               {driver.reviews.map((review) => (
-                <article key={review.name} className="rounded-[1.5rem] border-l-4 border-violet-600 bg-[#f0ebf5] p-5">
+                <article key={review.name} className="sun-card sun-card--interactive sun-card--review p-5">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#dccfe9] text-sm font-bold text-slate-700">
                       {review.initials}
@@ -117,18 +118,11 @@ function DriverProfilePage() {
           <div className="mt-5 space-y-5">
         
 
-            <label className="flex items-center justify-between rounded-full bg-[#e5deef] px-4 py-3 text-sm font-bold text-slate-700">
-              <span>Need walker assistance?</span>
-              <span className="relative inline-flex h-6 w-11 items-center rounded-full bg-violet-500">
-                <span className="ml-auto mr-1 h-4 w-4 rounded-full bg-white" />
-              </span>
-            </label>
-
             <Link
               to={`/driver/${driverId}/request`}
               className="block w-full rounded-full bg-violet-600 px-5 py-3 text-center text-xl font-black text-white transition hover:bg-violet-700"
             >
-              Request Ride →
+              Request Ride
             </Link>
 
             <p className="text-center text-sm text-slate-600">No payment required until ride completion.</p>
@@ -141,6 +135,7 @@ function DriverProfilePage() {
           </div>
         </aside>
       </main>
+      
     </div>
   )
 }

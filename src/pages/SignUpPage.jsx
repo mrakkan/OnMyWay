@@ -78,23 +78,23 @@ function SignUpPage() {
   }
 
   return (
-    <BackgroundGradientAnimation
-      gradientBackgroundStart="rgb(243, 239, 247)"
-      gradientBackgroundEnd="rgb(111, 76, 224)"
-      firstColor="122, 90, 248"
-      secondColor="147, 51, 234"
-      thirdColor="196, 181, 253"
-      fourthColor="129, 140, 248"
-      fifthColor="168, 85, 247"
-      pointerColor="124, 58, 237"
-      size="88%"
-      blendingValue="hard-light"
-      className="z-0"
-      interactive
-    >
-      <div className="relative min-h-screen overflow-hidden text-slate-800">
+    <div className="relative min-h-screen text-slate-800">
+      <BackgroundGradientAnimation
+        gradientBackgroundStart="rgb(243, 239, 247)"
+        gradientBackgroundEnd="rgb(111, 76, 224)"
+        firstColor="122, 90, 248"
+        secondColor="147, 51, 234"
+        thirdColor="196, 181, 253"
+        fourthColor="129, 140, 248"
+        fifthColor="168, 85, 247"
+        pointerColor="124, 58, 237"
+        size="88%"
+        blendingValue="hard-light"
+        className="pointer-events-none z-0"
+        interactive
+      />
 
-        <div className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-8 py-6">
+      <div className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-8 py-6">
         <div className="flex items-center gap-2 text-violet-700">
           <span className="text-2xl font-bold tracking-tight">OnMyWay</span>
         </div>
@@ -116,24 +116,13 @@ function SignUpPage() {
           <h1 className="mt-4 text-6xl font-black leading-[0.95] text-slate-800">
             Join our
             <br />
-            <span className="text-violet-600">Caring</span>
+            <span className="text-black-600">Caring</span>
             <br />
-            <span className="text-violet-600">Community</span>
+            <span className="text-black-600">Community</span>
           </h1>
-          <p className="mt-6 max-w-md text-2xl leading-relaxed text-slate-600">
+          <p className="mt-6 max-w-md text-2xl">
             Experience a new standard of mobility designed with dignity, safety, and comfort at its heart.
           </p>
-
-
-          <div className="mt-6 max-w-md overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-            <div className="flex h-44 items-center justify-center bg-slate-100 text-sm text-slate-400">
-              ใส่รูปผู้สูงอายุที่นี่
-            </div>
-            <div className="m-3 rounded-2xl bg-white/90 p-3 text-xs text-slate-600 shadow">
-              &ldquo;Amethyst Care gave me back my independence. The drivers feel like family.&rdquo;
-              <p className="mt-1 font-semibold text-slate-700">— Martha S., Member since 2023</p>
-            </div>
-          </div>
         </section>
 
         <section className="rounded-[2rem] border border-[#e9e2f0] bg-[#f2edf7] p-8 shadow-[0_18px_45px_-35px_rgba(76,49,134,0.5)]">
@@ -231,17 +220,10 @@ function SignUpPage() {
             </p>
           </form>
         </section>
-        </main>
+      </main>
 
-        <footer className="relative z-10 border-t border-slate-200 px-8 py-6 text-sm text-slate-500">
-          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4">
-            <p>
-              <span className="font-semibold text-slate-600">OnMyWay</span>
-            </p>
-          </div>
-        </footer>
-      </div>
-    </BackgroundGradientAnimation>
+
+    </div>
   )
 }
 

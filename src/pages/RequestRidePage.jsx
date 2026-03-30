@@ -1,10 +1,11 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   Accessibility,
   ArrowRight,
   Calendar,
   Clock3,
   Ear,
+  MapPin,
   PersonStanding,
   PlusSquare,
   Search,
@@ -13,10 +14,38 @@ import {
   Waypoints,
 } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet'
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
 import driverProfiles from '../data/driverProfiles.json'
 import { addPendingRide, initializePendingRideSession } from '../utils/pendingRidesStorage'
 
 const quickDestinations = ['St. Mary\'s General Hospital', 'Northwest Dialysis Center']
+const DEFAULT_MAP_CENTER = { lat: 13.7563, lng: 100.5018 }
+
+const destinationPinIcon = L.divIcon({
+  className: 'custom-destination-pin',
+  html: `
+    <div style="position:relative;width:28px;height:28px;display:flex;align-items:center;justify-content:center;">
+      <span style="position:absolute;inset:0;border-radius:9999px;background:#7c3aed;opacity:0.25;transform:scale(1.15);"></span>
+      <span style="position:relative;width:16px;height:16px;border-radius:9999px;background:#7c3aed;border:2px solid #ffffff;box-shadow:0 8px 18px rgba(30,41,59,0.28);"></span>
+    </div>
+  `,
+  iconSize: [28, 28],
+  iconAnchor: [14, 14],
+})
+
+const pickupPinIcon = L.divIcon({
+  className: 'custom-pickup-pin',
+  html: `
+    <div style="position:relative;width:28px;height:28px;display:flex;align-items:center;justify-content:center;">
+      <span style="position:absolute;inset:0;border-radius:9999px;background:#0f766e;opacity:0.22;transform:scale(1.15);"></span>
+      <span style="position:relative;width:16px;height:16px;border-radius:9999px;background:#0f766e;border:2px solid #ffffff;box-shadow:0 8px 18px rgba(30,41,59,0.28);"></span>
+    </div>
+  `,
+  iconSize: [28, 28],
+  iconAnchor: [14, 14],
+})
 
 const assistanceOptions = [
   { id: 'wheelchair', label: 'Wheelchair', icon: Accessibility },
@@ -42,6 +71,69 @@ function getRequestDateLabel(dateValue, timeValue) {
   return `${dateLabel.toUpperCase()}, ${timeLabel}`
 }
 
+async function searchDestinationSuggestions(query, { signal, limit = 6 } = {}) {
+  const searchParams = new URLSearchParams({
+    format: 'jsonv2',
+    q: query,
+    limit: String(limit),
+    addressdetails: '1',
+  })
+
+  const response = await fetch(`https://nominatim.openstreetmap.org/search?${searchParams.toString()}`, { signal })
+  if (!response.ok) {
+    throw new Error('destination-search-failed')
+  }
+
+  const payload = await response.json()
+  return payload
+    .map((item) => ({
+      label: item.display_name,
+      lat: Number(item.lat),
+      lng: Number(item.lon),
+    }))
+    .filter((item) => Number.isFinite(item.lat) && Number.isFinite(item.lng))
+}
+
+async function reverseDestinationLookup(lat, lng, { signal } = {}) {
+  const searchParams = new URLSearchParams({
+    format: 'jsonv2',
+    lat: String(lat),
+    lon: String(lng),
+  })
+
+  const response = await fetch(`https://nominatim.openstreetmap.org/reverse?${searchParams.toString()}`, { signal })
+  if (!response.ok) {
+    throw new Error('destination-reverse-failed')
+  }
+
+  const payload = await response.json()
+  return payload.display_name || ''
+}
+
+function RecenterMap({ center }) {
+  const map = useMap()
+
+  useEffect(() => {
+    map.flyTo(center, 14, { duration: 0.65 })
+  }, [center, map])
+
+  return null
+}
+
+function LocationMapPin({ markerPosition, onMapPick, markerIcon }) {
+  useMapEvents({
+    click(event) {
+      onMapPick(event.latlng.lat, event.latlng.lng)
+    },
+  })
+
+  if (!markerPosition) {
+    return null
+  }
+
+  return <Marker position={[markerPosition.lat, markerPosition.lng]} icon={markerIcon} />
+}
+
 export default function RequestRidePage() {
   const { driverId } = useParams()
   const navigate = useNavigate()
@@ -52,16 +144,226 @@ export default function RequestRidePage() {
   }, [driverId])
 
   const [formValues, setFormValues] = useState({
+    pickupLocation: '',
     destination: '',
     rideDate: '',
     pickupTime: '',
     notes: '',
   })
   const [selectedAssistances, setSelectedAssistances] = useState(['walking-aid'])
+  const [pickupSuggestions, setPickupSuggestions] = useState([])
+  const [isPickupLoading, setIsPickupLoading] = useState(false)
+  const [pickupSearchError, setPickupSearchError] = useState('')
+  const [isResolvingPickupMapPick, setIsResolvingPickupMapPick] = useState(false)
+  const [selectedPickupLocation, setSelectedPickupLocation] = useState(null)
+  const [destinationSuggestions, setDestinationSuggestions] = useState([])
+  const [isDestinationLoading, setIsDestinationLoading] = useState(false)
+  const [destinationSearchError, setDestinationSearchError] = useState('')
+  const [isResolvingMapPick, setIsResolvingMapPick] = useState(false)
+  const [selectedLocation, setSelectedLocation] = useState(null)
+
+  const skipNextPickupSuggestionRequestRef = useRef(false)
+  const pickupReverseLookupRequestIdRef = useRef(0)
+  const skipNextSuggestionRequestRef = useRef(false)
+  const reverseLookupRequestIdRef = useRef(0)
+
+  const pickupMapCenter = selectedPickupLocation
+    ? [selectedPickupLocation.lat, selectedPickupLocation.lng]
+    : [DEFAULT_MAP_CENTER.lat, DEFAULT_MAP_CENTER.lng]
+  const destinationMapCenter = selectedLocation ? [selectedLocation.lat, selectedLocation.lng] : [DEFAULT_MAP_CENTER.lat, DEFAULT_MAP_CENTER.lng]
+
+  useEffect(() => {
+    const query = formValues.pickupLocation.trim()
+
+    if (skipNextPickupSuggestionRequestRef.current) {
+      skipNextPickupSuggestionRequestRef.current = false
+      return undefined
+    }
+
+    if (query.length < 3) {
+      setPickupSuggestions([])
+      setPickupSearchError('')
+      return undefined
+    }
+
+    const controller = new AbortController()
+    const timer = window.setTimeout(async () => {
+      setIsPickupLoading(true)
+      setPickupSearchError('')
+
+      try {
+        const nextSuggestions = await searchDestinationSuggestions(query, {
+          signal: controller.signal,
+        })
+
+        setPickupSuggestions(nextSuggestions)
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          setPickupSuggestions([])
+          setPickupSearchError('Unable to search pickup location right now. Please try again.')
+        }
+      } finally {
+        setIsPickupLoading(false)
+      }
+    }, 320)
+
+    return () => {
+      controller.abort()
+      window.clearTimeout(timer)
+    }
+  }, [formValues.pickupLocation])
+
+  useEffect(() => {
+    const query = formValues.destination.trim()
+
+    if (skipNextSuggestionRequestRef.current) {
+      skipNextSuggestionRequestRef.current = false
+      return undefined
+    }
+
+    if (query.length < 3) {
+      setDestinationSuggestions([])
+      setDestinationSearchError('')
+      return undefined
+    }
+
+    const controller = new AbortController()
+    const timer = window.setTimeout(async () => {
+      setIsDestinationLoading(true)
+      setDestinationSearchError('')
+
+      try {
+        const nextSuggestions = await searchDestinationSuggestions(query, {
+          signal: controller.signal,
+        })
+
+        setDestinationSuggestions(nextSuggestions)
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          setDestinationSuggestions([])
+          setDestinationSearchError('Unable to search destination right now. Please try again.')
+        }
+      } finally {
+        setIsDestinationLoading(false)
+      }
+    }, 320)
+
+    return () => {
+      controller.abort()
+      window.clearTimeout(timer)
+    }
+  }, [formValues.destination])
 
   const onChangeField = (field) => (event) => {
     const { value } = event.target
     setFormValues((current) => ({ ...current, [field]: value }))
+  }
+
+  const selectPickupSuggestion = (suggestion) => {
+    skipNextPickupSuggestionRequestRef.current = true
+    setFormValues((current) => ({ ...current, pickupLocation: suggestion.label }))
+    setSelectedPickupLocation(suggestion)
+    setPickupSuggestions([])
+    setPickupSearchError('')
+  }
+
+  const setPickupFromMap = async (lat, lng) => {
+    const normalizedLat = Number(lat.toFixed(6))
+    const normalizedLng = Number(lng.toFixed(6))
+    const fallbackLabel = `Pinned pickup (${normalizedLat}, ${normalizedLng})`
+
+    pickupReverseLookupRequestIdRef.current += 1
+    const requestId = pickupReverseLookupRequestIdRef.current
+
+    skipNextPickupSuggestionRequestRef.current = true
+    setSelectedPickupLocation({ lat: normalizedLat, lng: normalizedLng, label: fallbackLabel })
+    setFormValues((current) => ({ ...current, pickupLocation: fallbackLabel }))
+    setPickupSuggestions([])
+    setPickupSearchError('')
+    setIsResolvingPickupMapPick(true)
+
+    try {
+      const resolvedLabel = await reverseDestinationLookup(normalizedLat, normalizedLng)
+      if (pickupReverseLookupRequestIdRef.current !== requestId) {
+        return
+      }
+
+      if (!resolvedLabel) {
+        return
+      }
+
+      skipNextPickupSuggestionRequestRef.current = true
+      setSelectedPickupLocation({ lat: normalizedLat, lng: normalizedLng, label: resolvedLabel })
+      setFormValues((current) => ({ ...current, pickupLocation: resolvedLabel }))
+    } catch {
+      // Keep fallback label when reverse geocoding fails.
+    } finally {
+      if (pickupReverseLookupRequestIdRef.current === requestId) {
+        setIsResolvingPickupMapPick(false)
+      }
+    }
+  }
+
+  const selectDestinationSuggestion = (suggestion) => {
+    skipNextSuggestionRequestRef.current = true
+    setFormValues((current) => ({ ...current, destination: suggestion.label }))
+    setSelectedLocation(suggestion)
+    setDestinationSuggestions([])
+    setDestinationSearchError('')
+  }
+
+  const setDestinationFromMap = async (lat, lng) => {
+    const normalizedLat = Number(lat.toFixed(6))
+    const normalizedLng = Number(lng.toFixed(6))
+    const fallbackLabel = `Pinned location (${normalizedLat}, ${normalizedLng})`
+
+    reverseLookupRequestIdRef.current += 1
+    const requestId = reverseLookupRequestIdRef.current
+
+    skipNextSuggestionRequestRef.current = true
+    setSelectedLocation({ lat: normalizedLat, lng: normalizedLng, label: fallbackLabel })
+    setFormValues((current) => ({ ...current, destination: fallbackLabel }))
+    setDestinationSuggestions([])
+    setDestinationSearchError('')
+    setIsResolvingMapPick(true)
+
+    try {
+      const resolvedLabel = await reverseDestinationLookup(normalizedLat, normalizedLng)
+      if (reverseLookupRequestIdRef.current !== requestId) {
+        return
+      }
+
+      if (!resolvedLabel) {
+        return
+      }
+
+      skipNextSuggestionRequestRef.current = true
+      setSelectedLocation({ lat: normalizedLat, lng: normalizedLng, label: resolvedLabel })
+      setFormValues((current) => ({ ...current, destination: resolvedLabel }))
+    } catch {
+      // Keep fallback label when reverse geocoding fails.
+    } finally {
+      if (reverseLookupRequestIdRef.current === requestId) {
+        setIsResolvingMapPick(false)
+      }
+    }
+  }
+
+  const applyQuickDestination = async (destination) => {
+    setFormValues((current) => ({ ...current, destination }))
+    setDestinationSuggestions([])
+    setDestinationSearchError('')
+
+    try {
+      const [firstSuggestion] = await searchDestinationSuggestions(destination, { limit: 1 })
+      if (firstSuggestion) {
+        skipNextSuggestionRequestRef.current = true
+        setFormValues((current) => ({ ...current, destination: firstSuggestion.label }))
+        setSelectedLocation(firstSuggestion)
+      }
+    } catch {
+      // Keep destination text even if geocoding fails.
+    }
   }
 
   const toggleAssistance = (assistanceId) => {
@@ -85,6 +387,11 @@ export default function RequestRidePage() {
       status: 'Pending',
       title: formValues.destination || 'Medical Appointment',
       location: formValues.destination || 'Destination to be confirmed',
+      pickup: formValues.pickupLocation || 'Pickup to be confirmed',
+      pickupLat: selectedPickupLocation?.lat ?? null,
+      pickupLng: selectedPickupLocation?.lng ?? null,
+      destinationLat: selectedLocation?.lat ?? null,
+      destinationLng: selectedLocation?.lng ?? null,
       borderStyle: 'yellow',
       fromLocalPending: true,
       driverName: driver.name,
@@ -129,7 +436,74 @@ export default function RequestRidePage() {
                 Where Are We Going?
               </h3>
 
-              <div className="relative">
+              <div>
+                <p className="mb-2 text-sm font-black text-slate-700">Where should your driver pick you up?</p>
+                <div className="relative">
+                  <input
+                    value={formValues.pickupLocation}
+                    onChange={onChangeField('pickupLocation')}
+                    required
+                    type="text"
+                    placeholder="Search pickup point (home, clinic lobby, etc.)"
+                    className="w-full rounded-full border border-transparent bg-white px-5 py-3 text-sm font-medium text-slate-700 outline-none transition focus:border-teal-600"
+                  />
+                  <Search className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-teal-700" />
+                </div>
+
+                {(isPickupLoading || pickupSuggestions.length > 0 || pickupSearchError) && (
+                  <div className="mt-2 rounded-2xl bg-white p-2 shadow-sm ring-1 ring-teal-100">
+                    {isPickupLoading && <p className="px-3 py-2 text-xs font-semibold text-slate-500">Searching pickup locations...</p>}
+                    {!isPickupLoading && pickupSuggestions.length > 0 && (
+                      <ul className="max-h-56 overflow-auto">
+                        {pickupSuggestions.map((suggestion) => (
+                          <li key={`pickup-${suggestion.lat}-${suggestion.lng}`}>
+                            <button
+                              type="button"
+                              onClick={() => selectPickupSuggestion(suggestion)}
+                              className="w-full rounded-xl px-3 py-2 text-left text-xs font-medium text-slate-700 transition hover:bg-teal-50"
+                            >
+                              {suggestion.label}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    {!isPickupLoading && pickupSearchError && <p className="px-3 py-2 text-xs font-semibold text-rose-600">{pickupSearchError}</p>}
+                  </div>
+                )}
+
+                <div className="mt-4">
+                  <div className="mb-2 flex items-center gap-2 text-sm font-black text-slate-700">
+                    <MapPin className="h-4 w-4 text-teal-700" />
+                    Pin pickup point on map
+                  </div>
+
+                  <div className="overflow-hidden rounded-3xl bg-white ring-1 ring-teal-200">
+                    <div className="h-64 w-full">
+                      <MapContainer center={pickupMapCenter} zoom={13} className="h-full w-full" scrollWheelZoom>
+                        <TileLayer
+                          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
+
+                        <RecenterMap center={pickupMapCenter} />
+                        <LocationMapPin
+                          markerPosition={selectedPickupLocation}
+                          onMapPick={setPickupFromMap}
+                          markerIcon={pickupPinIcon}
+                        />
+                      </MapContainer>
+                    </div>
+                  </div>
+
+                  <p className="mt-2 text-xs font-semibold text-slate-500">Click on map to place pickup pin where the driver should arrive.</p>
+                  {isResolvingPickupMapPick && <p className="mt-1 text-xs font-semibold text-teal-700">Resolving pickup location...</p>}
+                </div>
+              </div>
+
+              <div className="mt-5 border-t border-[#d2c6df] pt-5">
+                <p className="mb-2 text-sm font-black text-slate-700">Where are you going?</p>
+                <div className="relative">
                 <input
                   value={formValues.destination}
                   onChange={onChangeField('destination')}
@@ -141,17 +515,70 @@ export default function RequestRidePage() {
                 <Search className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-violet-600" />
               </div>
 
+              {(isDestinationLoading || destinationSuggestions.length > 0 || destinationSearchError) && (
+                <div className="mt-2 rounded-2xl bg-white p-2 shadow-sm ring-1 ring-violet-100">
+                  {isDestinationLoading && <p className="px-3 py-2 text-xs font-semibold text-slate-500">Searching destinations...</p>}
+                  {!isDestinationLoading && destinationSuggestions.length > 0 && (
+                    <ul className="max-h-56 overflow-auto">
+                      {destinationSuggestions.map((suggestion) => (
+                        <li key={`${suggestion.lat}-${suggestion.lng}`}>
+                          <button
+                            type="button"
+                            onClick={() => selectDestinationSuggestion(suggestion)}
+                            className="w-full rounded-xl px-3 py-2 text-left text-xs font-medium text-slate-700 transition hover:bg-violet-50"
+                          >
+                            {suggestion.label}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {!isDestinationLoading && destinationSearchError && (
+                    <p className="px-3 py-2 text-xs font-semibold text-rose-600">{destinationSearchError}</p>
+                  )}
+                </div>
+              )}
+
+              <div className="mt-4">
+                <div className="mb-2 flex items-center gap-2 text-sm font-black text-slate-700">
+                  <MapPin className="h-4 w-4 text-violet-700" />
+                  Pin destination on map
+                </div>
+
+                <div className="overflow-hidden rounded-3xl bg-white ring-1 ring-violet-200">
+                  <div className="h-72 w-full">
+                    <MapContainer center={destinationMapCenter} zoom={13} className="h-full w-full" scrollWheelZoom>
+                      <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      />
+
+                      <RecenterMap center={destinationMapCenter} />
+                      <LocationMapPin
+                        markerPosition={selectedLocation}
+                        onMapPick={setDestinationFromMap}
+                        markerIcon={destinationPinIcon}
+                      />
+                    </MapContainer>
+                  </div>
+                </div>
+
+                <p className="mt-2 text-xs font-semibold text-slate-500">Click anywhere on the map to pin a location, then adjust by searching if needed.</p>
+                {isResolvingMapPick && <p className="mt-1 text-xs font-semibold text-violet-700">Resolving pinned location...</p>}
+              </div>
+
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
                 {quickDestinations.map((destination) => (
                   <button
                     key={destination}
                     type="button"
-                    onClick={() => setFormValues((current) => ({ ...current, destination }))}
+                    onClick={() => applyQuickDestination(destination)}
                     className="rounded-2xl bg-white px-4 py-3 text-left text-sm font-semibold text-slate-700 ring-1 ring-transparent transition hover:ring-violet-300"
                   >
                     {destination}
                   </button>
                 ))}
+              </div>
               </div>
 
               <div className="mt-5 grid gap-3 sm:grid-cols-2">

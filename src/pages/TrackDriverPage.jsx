@@ -1,10 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ArrowLeft, ChevronDown, ChevronUp, MapPin, MessageCircle, Route as RouteIcon, Timer } from 'lucide-react'
+import { AlertOctagon, CarFront, Home, Hospital, Phone, Star } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { MapContainer, Marker, Polyline, TileLayer, Tooltip } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import AppFooter from '../components/AppFooter'
+import TopNavbar from '../components/TopNavbar'
 import { getPendingRides } from '../utils/pendingRidesStorage'
+import { LightWavesBackground } from '../components/LightWavesBackground'
 
 const MOCK_ROUTE = [
   [13.7562, 100.5467],
@@ -76,7 +79,6 @@ const userIcon = L.divIcon({
 export default function TrackDriverPage() {
   const navigate = useNavigate()
   const [driverIndex, setDriverIndex] = useState(0)
-  const [isStatusExpanded, setIsStatusExpanded] = useState(false)
 
   const destination = MOCK_ROUTE[MOCK_ROUTE.length - 1]
   const driverPosition = MOCK_ROUTE[driverIndex]
@@ -119,111 +121,114 @@ export default function TrackDriverPage() {
   const progressPercent = Math.round(((totalDistanceKm - remainingDistanceKm) / totalDistanceKm) * 100)
   const etaMin = Math.max(1, Math.round((remainingDistanceKm / DRIVER_SPEED_KMH) * 60))
 
+  const pickupLabel = latestRequestedRide?.pickup || 'Your Residence'
+  const destinationLabel = latestRequestedRide?.location || "St. Mary's General Hospital"
+  const displayDriverName = latestRequestedRide?.driverName || DRIVER_NAME
+  const vehicleLabel = 'Silver Honda Accord'
+  const plateLabel = 'AMY-1249'
+
   return (
-    <div className="relative h-[100dvh] w-full overflow-hidden bg-slate-100">
-      <MapContainer center={destination} zoom={14} className="h-full w-full" zoomControl={false}>
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+    <div className="min-h-screen bg-[#f1eef6] text-slate-800">
+      <LightWavesBackground className="pointer-events-none z-0" speed={0.8} intensity={0.5} />
+      <TopNavbar />
 
-        <Polyline positions={MOCK_ROUTE} pathOptions={{ color: '#d1c4e9', weight: 8 }} />
-        <Polyline positions={traveledRoute} pathOptions={{ color: '#7c3aed', weight: 8 }} />
+      <main className="mx-auto max-w-[1240px] px-4 py-6 lg:px-8">
+        <section className="relative overflow-hidden rounded-[2rem] border border-[#dbd3e8] bg-white shadow-[0_30px_70px_-46px_rgba(43,20,88,0.7)]">
+          <div className="relative h-[52vh] min-h-[340px] w-full lg:h-[70vh] lg:min-h-[560px]">
+            <MapContainer center={destination} zoom={14} className="h-full w-full" zoomControl={false}>
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
 
-        <Marker position={driverPosition} icon={driverIcon}>
-          <Tooltip direction="top" offset={[0, -14]} opacity={1}>
-            Driver now
-          </Tooltip>
-        </Marker>
+              <Polyline positions={MOCK_ROUTE} pathOptions={{ color: '#d6c7ea', weight: 8 }} />
+              <Polyline positions={traveledRoute} pathOptions={{ color: '#6d3cc5', weight: 8 }} />
 
-        <Marker position={destination} icon={userIcon}>
-          <Tooltip direction="top" offset={[0, -12]} opacity={1}>
-            Pickup point
-          </Tooltip>
-        </Marker>
-      </MapContainer>
+              <Marker position={driverPosition} icon={driverIcon}>
+                <Tooltip direction="top" offset={[0, -14]} opacity={1}>
+                  Driver now
+                </Tooltip>
+              </Marker>
 
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-[400] bg-gradient-to-b from-black/35 to-transparent p-4 sm:p-6">
-        <div className="mx-auto flex w-full max-w-[980px] items-start justify-between gap-3">
-          <button
-            onClick={() => navigate(-1)}
-            className="pointer-events-auto inline-flex h-11 w-11 items-center justify-center rounded-full bg-white text-slate-800 shadow-lg transition hover:bg-slate-100"
-            aria-label="Back"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </button>
+              <Marker position={destination} icon={userIcon}>
+                <Tooltip direction="top" offset={[0, -12]} opacity={1}>
+                  Drop-off point
+                </Tooltip>
+              </Marker>
+            </MapContainer>
 
-          <div className="pointer-events-auto rounded-2xl bg-white/95 px-4 py-3 shadow-lg backdrop-blur">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Live Tracking</p>
-            <p className="text-lg font-black text-violet-700">ถึงในประมาณ {etaMin} นาที</p>
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_55%_20%,rgba(255,255,255,0.22),rgba(255,255,255,0)_42%)] lg:bg-[radial-gradient(circle_at_55%_20%,rgba(255,255,255,0.22),rgba(255,255,255,0)_42%)]" />
           </div>
-        </div>
-      </div>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[400] p-4 sm:p-6">
-        <div className="mx-auto w-full max-w-[980px]">
-          <div
-            className="pointer-events-auto relative rounded-3xl bg-white/95 p-5 shadow-2xl ring-1 ring-slate-200 backdrop-blur transition-transform duration-300 ease-out sm:p-6"
-            style={{ transform: isStatusExpanded ? 'translateY(0)' : 'translateY(calc(100% - 108px))' }}
-          >
-            <button
-              type="button"
-              onClick={() => setIsStatusExpanded((current) => !current)}
-              className="absolute left-1/2 top-0 inline-flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold uppercase tracking-wide text-slate-700 shadow ring-1 ring-slate-200 hover:bg-slate-50"
-              aria-expanded={isStatusExpanded}
-              aria-label="Toggle tracking status panel"
-            >
-              {isStatusExpanded ? 'ย่อข้อมูล' : 'ดูข้อมูลการเดินทาง'}
-              {isStatusExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
-            </button>
+          <div className="relative z-[450] mx-3 mt-4 space-y-4 pb-2 lg:absolute lg:left-6 lg:top-6 lg:mx-0 lg:mt-0 lg:w-[18.5rem] lg:pb-0">
+            <article className="rounded-[2rem] bg-white/96 p-6 shadow-[0_16px_36px_-24px_rgba(46,21,94,0.8)] backdrop-blur-sm">
+              <p className="text-sm font-bold text-violet-700">Driver is en route</p>
+              <p className="mt-2 text-5xl font-black leading-[0.9] text-slate-800 sm:text-6xl">{etaMin}</p>
+              <p className="mt-1 text-xl font-black text-slate-800 sm:text-2xl">minutes</p>
+              <p className="mt-1 text-base font-medium text-slate-500">Estimated arrival time</p>
+            </article>
 
-            <div className="mb-4 flex items-start justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <img
-                  src={DRIVER_AVATAR}
-                  alt={DRIVER_NAME}
-                  className="h-14 w-14 rounded-full border-2 border-violet-200 object-cover shadow-md"
-                />
-                <div>
-                <p className="text-sm font-semibold text-slate-500">Your Driver</p>
-                <h1 className="text-2xl font-black text-slate-800">{DRIVER_NAME}</h1>
-                <p className="text-sm font-medium text-slate-600">{VEHICLE}</p>
+            <article className="rounded-[2rem] bg-white/96 p-6 shadow-[0_16px_36px_-24px_rgba(46,21,94,0.8)] backdrop-blur-sm">
+              <div className="space-y-5">
+                <div className="flex items-start gap-3">
+                  <span className="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-full bg-violet-100 text-violet-700">
+                    <Home className="h-4 w-4" />
+                  </span>
+                  <div>
+                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Pickup</p>
+                    <p className="text-lg font-black leading-tight text-slate-800 sm:text-xl lg:text-2xl">{pickupLabel}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <span className="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-full bg-rose-100 text-rose-600">
+                    <Hospital className="h-4 w-4" />
+                  </span>
+                  <div>
+                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Drop-off</p>
+                    <p className="text-lg font-black leading-tight text-slate-800 sm:text-xl lg:text-2xl">{destinationLabel}</p>
+                  </div>
                 </div>
               </div>
-            </div>
+            </article>
+          </div>
 
-            <div className="grid gap-3 sm:grid-cols-3">
-              <div className="rounded-2xl bg-slate-100 px-4 py-3">
-                <p className="mb-1 flex items-center gap-1 text-xs font-bold uppercase tracking-wide text-slate-500">
-                  <RouteIcon className="h-4 w-4" />
-                  Remaining Distance
-                </p>
-                <p className="text-lg font-black text-slate-800">{remainingDistanceKm.toFixed(2)} km</p>
+          <div className="relative z-[450] mx-3 mb-4 mt-4 flex flex-col gap-4 lg:absolute lg:right-6 lg:top-6 lg:mx-0 lg:mb-0 lg:mt-0 lg:w-[18rem]">
+            <article className="rounded-[2rem] bg-white/96 p-5 shadow-[0_16px_36px_-24px_rgba(46,21,94,0.8)] backdrop-blur-sm">
+              <div className="flex items-center gap-3">
+                <img src={DRIVER_AVATAR} alt={displayDriverName} className="h-16 w-16 rounded-full border-2 border-violet-200 object-cover" />
+                <div>
+                  <p className="text-2xl font-black leading-tight text-slate-800 sm:text-3xl">{displayDriverName}</p>
+                  <p className="mt-1 flex items-center gap-1 text-sm font-semibold text-slate-600">
+                    <Star className="h-4 w-4 fill-violet-500 text-violet-500" />
+                    4.9 <span className="text-slate-500">({Math.max(100, latestRequestedRide?.rides || 128)} rides)</span>
+                  </p>
+                </div>
               </div>
 
-              <div className="rounded-2xl bg-slate-100 px-4 py-3">
-                <p className="mb-1 flex items-center gap-1 text-xs font-bold uppercase tracking-wide text-slate-500">
-                  <Timer className="h-4 w-4" />
-                  ETA
+              <div className="mt-5 rounded-3xl bg-[#ebe5f2] px-4 py-3">
+                <p className="flex items-center gap-2 text-xl font-black text-slate-800">
+                  <CarFront className="h-5 w-5 text-slate-500" />
+                  {vehicleLabel}
                 </p>
-                <p className="text-lg font-black text-slate-800">{etaMin} min</p>
+                <p className="mt-1 text-sm font-semibold text-slate-500">Plate: {plateLabel}</p>
               </div>
-            </div>
 
-            <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-sm font-medium text-slate-500">พูดคุยกับคนขับได้ทันทีระหว่างเดินทาง</p>
               <button
                 type="button"
                 onClick={() => navigate(`/chat/${activeChatDriverId}`)}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-bold text-white shadow hover:bg-violet-700"
+                className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-violet-600 px-4 py-3 text-base font-black text-white shadow-[0_12px_24px_-16px_rgba(64,30,128,0.95)] transition hover:bg-violet-700 sm:text-lg lg:text-xl"
               >
-                <MessageCircle className="h-4 w-4" />
+                <Phone className="h-5 w-5" />
                 Chat with Driver
               </button>
-            </div>
+            </article>
+
           </div>
-        </div>
-      </div>
+
+        </section>
+      </main>
+
     </div>
   )
 }

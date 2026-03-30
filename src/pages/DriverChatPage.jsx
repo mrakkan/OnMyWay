@@ -190,7 +190,7 @@ export default function DriverChatPage() {
   }
 
   return (
-    <div className="h-[100dvh] w-full bg-[#f3eff7] p-2 sm:p-4">
+    <div className="h-[100dvh] w-full p-2 sm:p-4">
       <div className="mx-auto flex h-full w-full max-w-[1280px] overflow-hidden rounded-[2rem] bg-white shadow-[0_20px_50px_-26px_rgba(94,71,155,0.45)] ring-1 ring-[#e5e0ec]">
         <aside className="hidden w-[320px] border-r border-[#ece7f3] bg-[#f7f5fb] md:flex md:flex-col">
           <div className="border-b border-[#ece7f3] px-5 pt-4">
@@ -263,14 +263,6 @@ export default function DriverChatPage() {
               />
             </div>
 
-            <div className="ml-auto flex items-center gap-2">
-              <button type="button" className="inline-flex h-9 w-9 items-center justify-center rounded-full text-violet-600 hover:bg-violet-50" aria-label="Settings">
-                <Settings className="h-5 w-5" />
-              </button>
-              <button type="button" className="inline-flex h-9 w-9 items-center justify-center rounded-full text-violet-600 hover:bg-violet-50" aria-label="Help">
-                <CircleHelp className="h-5 w-5" />
-              </button>
-            </div>
           </header>
 
           {activeThread ? (
@@ -338,12 +330,6 @@ export default function DriverChatPage() {
 
                 <div className="border-t border-[#ece7f3] bg-white px-4 py-4 sm:px-6">
                   <div className="flex items-center gap-2 rounded-full border border-[#e8e1f2] bg-[#f8f6fb] px-3 py-2">
-                    <button type="button" className="inline-flex h-8 w-8 items-center justify-center rounded-full text-violet-600 hover:bg-violet-100" aria-label="Attach">
-                      <PlusCircle className="h-5 w-5" />
-                    </button>
-                    <button type="button" className="inline-flex h-8 w-8 items-center justify-center rounded-full text-violet-600 hover:bg-violet-100" aria-label="Image">
-                      <Image className="h-5 w-5" />
-                    </button>
 
                     <input
                       type="text"

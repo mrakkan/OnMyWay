@@ -58,7 +58,7 @@ function SignInPage() {
 
           <div className="relative mx-auto flex min-h-[calc(100vh-4rem)] max-w-xl flex-col items-center justify-center">
             <div className="text-center">
-              <h1 className="text-3xl font-bold tracking-tight text-violet-700">OnMyWay</h1>
+              <h1 className="text-5xl font-bold tracking-tight text-white">OnMyWay</h1>
             
             </div>
 
