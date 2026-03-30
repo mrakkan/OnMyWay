@@ -936,7 +936,6 @@ export default function LandingPage() {
           </LiveGrid>
         )}
 
-        <LiveFootnote>Data source: Open-Meteo Forecast API</LiveFootnote>
       </LiveApiSection>
     </Page>
   )

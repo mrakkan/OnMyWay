@@ -51,7 +51,6 @@ function RideLayout() {
         </motion.div>
       </AnimatePresence>
       <MobileBottomNav />
-      <AppFooter />
     </div>
   )
 }
