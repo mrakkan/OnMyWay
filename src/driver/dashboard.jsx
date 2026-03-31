@@ -1,5 +1,6 @@
 import React from "react";
 import DriverSidebar from "./sidebar";
+import DriverTopHeader from "./top-header";
 
 export default function Dashboard() {
   return (
@@ -9,23 +10,7 @@ export default function Dashboard() {
     
           <div className="flex-1 flex flex-col h-screen overflow-y-auto">
     
-            <header className="pt-5 px-8 flex items-center justify-end ">
-              <div className="flex items-center gap-3">
-                <p className="p-2 bg-green-200 text-green-800 rounded-xl text-sm font-semibold flex items-center gap-1">
-                                    <span className="material-symbols-outlined  ">
-                                            verified
-                                    </span>
-                                    verify
-                                </p>
-                <div className="flex items-center gap-3">
-                  <p className="font-bold text-[#581C87]">David Miller</p>
-                  <img
-                    className="w-10 h-10 rounded-full object-cover"
-                    src="https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png"
-                  />
-                </div>
-              </div>
-            </header>
+            <DriverTopHeader />
     
       {/* Main */}
       <main className="flex-1 px-6 md:px-10 mt-2 md:mt-0">

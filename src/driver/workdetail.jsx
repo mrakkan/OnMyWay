@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import DriverSidebar from "./sidebar";
+import DriverTopHeader from "./top-header";
 import { MapContainer, Marker, Polyline, Popup, TileLayer } from "react-leaflet";
 import L from "leaflet";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
@@ -85,15 +86,7 @@ export default function WorkDetail({ myWork, setMyWork }) {
       <DriverSidebar />
 
       <div className="flex-1 flex flex-col h-screen overflow-y-auto">
-        <header className="pt-5 px-8 flex items-center justify-end">
-          <div className="flex items-center gap-3">
-            <p className="font-bold text-[#581C87]">David Miller</p>
-            <img
-              className="w-10 h-10 rounded-full object-cover"
-              src="https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png"
-            />
-          </div>
-        </header>
+        <DriverTopHeader />
         <h2 className="text-3xl font-extrabold mb-2 flex  pl-8 mb-6">
             My Work Detail
           </h2>

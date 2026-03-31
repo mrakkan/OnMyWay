@@ -1,5 +1,6 @@
 import React from "react";
 import DriverSidebar from "./sidebar";
+import DriverTopHeader from "./top-header";
 import { useState } from "react";
 export default function Profile() {
     const [profilePreview, setProfilePreview] = useState(
@@ -190,16 +191,10 @@ export default function Profile() {
             <DriverSidebar />
 
             <div className="flex-1 flex flex-col h-screen overflow-y-auto">
-                <header className="pt-5 px-8 flex items-center justify-end">
-                    <div className="flex items-center gap-3">
-                        <p className="font-bold text-[#581C87]">David Miller</p>
-                        <img
-                            className="w-10 h-10 rounded-full object-cover"
-                            src={profilePreview}
-                            alt="profile"
-                        />
-                    </div>
-                </header>
+                <DriverTopHeader
+                    profilePreview={profilePreview}
+                    fullName={personalForm.fullName}
+                />
 
                 <main className="flex-1 px-6 md:px-10 mt-2 md:mt-0">
                     <header className="mb-4 flex justify-between items-end">
@@ -208,11 +203,7 @@ export default function Profile() {
 
                         </div>
 
-                        {/* Toggle */}
-                        {/* <div className="bg-gray-100 rounded-xl p-4 flex items-center gap-6">
-                            <span className="font-bold">Available</span>
-                            <input type="checkbox" defaultChecked />
-                        </div> */}
+                        
                     </header>
                     {/* Content */}
                     <div className="grid grid-cols-12 gap-6">
