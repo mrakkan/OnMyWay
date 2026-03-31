@@ -29,9 +29,12 @@ export default function AdminSidebar() {
                                     directions_car
                                 </span>
                             </div>
-                            <span className="text-lg font-bold tracking-tight text-primary">
+                            <div>
+                                <span className="text-lg font-bold tracking-tight text-primary">
                                 ON MY WAY
                             </span>
+                            <p className="text-sm text-primary">Admin Panel</p>
+                            </div>
                         </div>
 
                         {/* ปุ่มปิด (มือถือ) */}
@@ -61,7 +64,7 @@ export default function AdminSidebar() {
                             </span>
                             <span className="ml-2">Driver Request</span>
                         </Link>
-                        <Link to="" className="p-4 mt-2 flex items-center rounded-xl hover:bg-[#E7E0EB] text-[#64748B] hover:text-[#684CB5] hover:font-semibold ">
+                        <Link to="/admin/manage-user" className="p-4 mt-2 flex items-center rounded-xl hover:bg-[#E7E0EB] text-[#64748B] hover:text-[#684CB5] hover:font-semibold ">
                             <span className="material-symbols-outlined">
                                 person
                             </span>

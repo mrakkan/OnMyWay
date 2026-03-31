@@ -1,8 +1,37 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const getCurrentDriverApprovalStatus = () => {
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+    const matchedUser =
+        users.find(
+            (user) =>
+                user.email?.toLowerCase() === currentUser?.email?.toLowerCase()
+        ) || currentUser;
+
+    return matchedUser?.driverApprovalStatus || "pending";
+};
 
 export default function DriverSidebar() {
     const [open, setOpen] = useState(false);
+    const [approvalStatus, setApprovalStatus] = useState(() => getCurrentDriverApprovalStatus());
+
+    useEffect(() => {
+        const syncApprovalStatus = () => {
+            setApprovalStatus(getCurrentDriverApprovalStatus());
+        };
+
+        syncApprovalStatus();
+        window.addEventListener("storage", syncApprovalStatus);
+
+        return () => {
+            window.removeEventListener("storage", syncApprovalStatus);
+        };
+    }, []);
+
+    const isRestrictedMenu = approvalStatus === "pending" || approvalStatus === "rejected";
 
     return (
         <>
@@ -49,27 +78,32 @@ export default function DriverSidebar() {
                             </span>
                             <span className="ml-2">My Request</span>
                         </Link>
-                        <Link to="/my-works" className="p-4 mt-2 flex items-center rounded-xl hover:bg-[#E7E0EB] text-[#64748B] hover:text-[#684CB5] hover:font-semibold ">
-                            <span className="material-symbols-outlined">
-                                work
-                            </span>
-                            <span className="ml-2">My Works</span>
-                        </Link>
-                        <Link to="/profile" className="p-4 mt-2 flex items-center rounded-xl hover:bg-[#E7E0EB] text-[#64748B] hover:text-[#684CB5] hover:font-semibold ">
-                            <span className="material-symbols-outlined">
-                                person
-                            </span>
-                            <span className="ml-2">Profile</span>
-                        </Link>
 
-                        <Link to="/dashboard" className="p-4 mt-2 flex items-center rounded-xl hover:bg-[#E7E0EB] text-[#64748B] hover:text-[#684CB5] hover:font-semibold ">
-                            <span className="material-symbols-outlined">
-                                dashboard
-                            </span>
-                            <span className="ml-2">Dashboard</span>
-                        </Link>
+                        {!isRestrictedMenu && (
+                            <>
+                                <Link to="/my-works" className="p-4 mt-2 flex items-center rounded-xl hover:bg-[#E7E0EB] text-[#64748B] hover:text-[#684CB5] hover:font-semibold ">
+                                    <span className="material-symbols-outlined">
+                                        work
+                                    </span>
+                                    <span className="ml-2">My Works</span>
+                                </Link>
+                                <Link to="/profile" className="p-4 mt-2 flex items-center rounded-xl hover:bg-[#E7E0EB] text-[#64748B] hover:text-[#684CB5] hover:font-semibold ">
+                                    <span className="material-symbols-outlined">
+                                        person
+                                    </span>
+                                    <span className="ml-2">Profile</span>
+                                </Link>
 
-                        <Link to="/help" className="p-4 mt-2 flex items-center rounded-xl hover:bg-[#E7E0EB] text-[#64748B] hover:text-[#684CB5] hover:font-semibold ">
+                                <Link to="/dashboard" className="p-4 mt-2 flex items-center rounded-xl hover:bg-[#E7E0EB] text-[#64748B] hover:text-[#684CB5] hover:font-semibold ">
+                                    <span className="material-symbols-outlined">
+                                        dashboard
+                                    </span>
+                                    <span className="ml-2">Dashboard</span>
+                                </Link>
+                            </>
+                        )}
+
+                        <Link to="/help-center" className="p-4 mt-2 flex items-center rounded-xl hover:bg-[#E7E0EB] text-[#64748B] hover:text-[#684CB5] hover:font-semibold ">
                             <span className="material-symbols-outlined">
                                 help
                             </span>

@@ -2,7 +2,7 @@ import React from "react";
 import AdminSidebar from "./sidebar";
 import { useNavigate } from "react-router-dom";
 
-export default function ManageDriver() {
+export default function ManageUser() {
   const navigate = useNavigate();
   const [approvedDrivers, setApprovedDrivers] = React.useState([]);
   const [deletedDrivers, setDeletedDrivers] = React.useState([]);
@@ -102,7 +102,7 @@ export default function ManageDriver() {
                 
                 {/* Header */}
                 <h2 className="text-3xl font-extrabold mb-2 flex">
-                    Manage Drivers
+                    Manage Users
                   </h2>
                   <div className="flex gap-4">
           <input

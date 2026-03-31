@@ -113,29 +113,23 @@ export default function SeeProfile() {
 
             <div className="flex-1 flex flex-col h-screen overflow-y-auto">
                 <header className="pt-5 px-8 flex items-center justify-end">
-                    <div className="flex items-center gap-3">
-                        <p className="font-bold text-[#581C87]">David Miller</p>
-                        <img
-                            className="w-10 h-10 rounded-full object-cover"
-                            src={profilePreview}
-                            alt="profile"
-                        />
-                    </div>
+                    <button
+                            type="button"
+                            onClick={() => navigate(-1)}
+                            className="px-4 py-2 rounded-lg border border-purple-300 text-purple-700 hover:bg-purple-50 transition mb-6 flex items-center gap-1 w-max"
+                        >
+                            ย้อนกลับ
+                        </button>
                 </header>
 
-                <main className="flex-1 px-6 md:px-10 mt-2 md:mt-0">
-                    <header className="mb-4 flex justify-between items-end">
+                <main className="flex-1 px-6 md:px-10  md:mt-0">
+                    
+                    <header className="mb-4 flex">
                         <div className="flex items-center gap-2">
                             <h2 className="text-3xl font-extrabold  flex">Profile Management</h2>
 
                         </div>
-                        <button
-                            type="button"
-                            onClick={() => navigate(-1)}
-                            className="px-4 py-2 rounded-lg border border-purple-300 text-purple-700 hover:bg-purple-50"
-                        >
-                            ย้อนกลับ
-                        </button>
+                        
 
                         {/* Toggle */}
                         {/* <div className="bg-gray-100 rounded-xl p-4 flex items-center gap-6">

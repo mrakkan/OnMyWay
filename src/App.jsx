@@ -14,6 +14,8 @@ import AdminDashboard from './admin/admin-dashboard';
 import ManageDriver from './admin/mange-driver';
 import DriverRequest from './admin/driver-request';
 import SeeProfile from './admin/profile';
+import DriverChatPage from './driver/help-center';
+import ManageUser from './admin/manage-user';
 import { Navigate, Route, Routes } from 'react-router-dom'
 
 const mockRequests = [
@@ -92,12 +94,18 @@ function App() {
       <Route path="/my-works" element={<MyWorkPage myWork={myWork} />} />
       <Route path="/work/:id" element={<WorkDetail myWork={myWork} setMyWork={setMyWork} />} />
       <Route path="/profile" element={<Profile />} />
+      <Route path="/help-center" element={<DriverChatPage />} />
+
+       {/* Admin Routes */}
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/admin/sidebar" element={<AdminSidebar />} />
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
       <Route path="/admin/manage-driver" element={<ManageDriver />} />
       <Route path="/admin/driver-request" element={<DriverRequest />} />
       <Route path="/admin/profile" element={<SeeProfile />} />
+      <Route path="/admin/manage-user" element={<ManageUser />} />
+
+       {/* Fallback Route */} 
       <Route path="*" element={<Navigate to="/login" replace />} />
 
     </Routes>
