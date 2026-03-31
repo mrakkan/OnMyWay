@@ -229,8 +229,8 @@ export default function Profile() {
                                         <label className="block text-xs font-semibold mb-2 uppercase flex">
                                             Hourly Price
                                         </label>
-                                        <div className="relative">
-                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold">
+                                        <div className="relative ">
+                                            <span className="absolute left-4   pr-4 py-3 font-bold flex items-center">
                                                 ฿
                                             </span>
                                             <input
@@ -263,7 +263,7 @@ export default function Profile() {
                                     {/* Experience */}
                                     <div>
                                         <label className="block text-xs font-semibold mb-2 uppercase flex">
-                                            Experience (Years)
+                                            License plate
                                         </label>
                                         <input
                                             type="number"

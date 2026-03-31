@@ -101,9 +101,7 @@ export default function DriverRequest() {
                         <button onClick={() => setFilter('rejected')} className={`px-3 py-1 rounded ${filter==='rejected' ? 'bg-purple-600 text-white' : 'bg-gray-100'}`}>
                             Rejected ({computedLists.counts.rejected})
                         </button>
-                        <button onClick={() => setFilter('hidden')} className={`px-3 py-1 rounded ${filter==='hidden' ? 'bg-purple-600 text-white' : 'bg-gray-100'}`}>
-                            Hidden ({computedLists.counts.hidden})
-                        </button>
+                        
                     </div>
                 </div>
 
@@ -117,7 +115,7 @@ export default function DriverRequest() {
                             <div key={driver.email} className="bg-white rounded-xl p-6 shadow">
                                 <div className="flex items-start justify-between gap-4">
                                     <div>
-                                        <p className="text-xl font-bold flex">{driver.fullName || "-"} {driver.driverApprovalStatus === 'approved' && (<span className="ml-2 text-xs bg-green-100 text-green-700 px-2 rounded">APPROVED</span>)} {driver.driverApprovalStatus === 'rejected' && (<span className="ml-2 text-xs bg-red-100 text-red-700 px-2 rounded">REJECTED</span>)}</p>
+                                        <p className="text-xl font-bold flex">{driver.fullName || "-"} {driver.driverApprovalStatus === 'approved' && (<span className="ml-2 text-xs bg-green-100 text-green-700 px-2 rounded flex items-center">APPROVED</span>)} {driver.driverApprovalStatus === 'rejected' && (<span className="ml-2 text-xs bg-red-100 text-red-700 px-2 rounded flex items-center ">REJECTED</span>)}</p>
                                         <p className="text-sm text-gray-500 flex">{driver.email || "-"}</p>
                                     </div>
 

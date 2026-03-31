@@ -101,7 +101,7 @@ export default function ManageDriver() {
               <main className="flex-1 px-6 md:px-10 mt-2 md:mt-0 pt-10">
                 
                 {/* Header */}
-                <h2 className="text-3xl font-extrabold mb-2 flex">
+                <h2 className="text-3xl font-extrabold mb-6 flex">
                     Manage Drivers
                   </h2>
                   <div className="flex gap-4">

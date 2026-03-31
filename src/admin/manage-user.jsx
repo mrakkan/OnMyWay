@@ -1,91 +1,106 @@
 import React from "react";
 import AdminSidebar from "./sidebar";
-import { useNavigate } from "react-router-dom";
+import mockUsers from "./mock-user.json";
+
+const ensureUserIds = (list = []) =>
+  list.map((user, index) => {
+    if (user.userId) return user;
+    return {
+      ...user,
+      userId: `USR${String(index + 1).padStart(3, "0")}`,
+    };
+  });
 
 export default function ManageUser() {
-  const navigate = useNavigate();
-  const [approvedDrivers, setApprovedDrivers] = React.useState([]);
-  const [deletedDrivers, setDeletedDrivers] = React.useState([]);
+  const [users, setUsers] = React.useState([]);
+  const [deletedUsers, setDeletedUsers] = React.useState([]);
   const [searchText, setSearchText] = React.useState("");
   const [showDeleted, setShowDeleted] = React.useState(false);
 
-  const loadApprovedDrivers = React.useCallback(() => {
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-    const approved = users
-      .filter((user) => user.driverApprovalStatus === "approved")
-      .map((user, index) => ({
-        ...user,
-        rating: user.rating || (4.5 + ((index % 6) * 0.1)).toFixed(1),
-        rides: user.rides || 20 + index * 7,
-        income: user.income || 8000 + index * 1200,
-      }));
+  const loadUsers = React.useCallback(() => {
+    const storedUsers = JSON.parse(localStorage.getItem("mockUsers")) || [];
+    const seededUsers = storedUsers.length > 0 ? storedUsers : mockUsers;
+    const normalizedUsers = ensureUserIds(seededUsers);
 
-    setApprovedDrivers(approved);
+    if (storedUsers.length === 0) {
+      localStorage.setItem("mockUsers", JSON.stringify(normalizedUsers));
+    } else if (JSON.stringify(storedUsers) !== JSON.stringify(normalizedUsers)) {
+      localStorage.setItem("mockUsers", JSON.stringify(normalizedUsers));
+    }
+
+    setUsers(normalizedUsers);
   }, []);
 
-  const loadDeletedDrivers = React.useCallback(() => {
-    const deleted = JSON.parse(localStorage.getItem("deletedDrivers")) || [];
-    setDeletedDrivers(deleted);
+  const loadDeletedUsers = React.useCallback(() => {
+    const deleted = JSON.parse(localStorage.getItem("deletedMockUsers")) || [];
+    const normalizedDeletedUsers = ensureUserIds(deleted);
+
+    if (JSON.stringify(deleted) !== JSON.stringify(normalizedDeletedUsers)) {
+      localStorage.setItem("deletedMockUsers", JSON.stringify(normalizedDeletedUsers));
+    }
+
+    setDeletedUsers(normalizedDeletedUsers);
   }, []);
 
   React.useEffect(() => {
-    loadApprovedDrivers();
-    loadDeletedDrivers();
-  }, [loadApprovedDrivers, loadDeletedDrivers]);
+    loadUsers();
+    loadDeletedUsers();
+  }, [loadUsers, loadDeletedUsers]);
 
   const handleDelete = (email) => {
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-    const deleted = JSON.parse(localStorage.getItem("deletedDrivers")) || [];
-    const targetDriver = users.find((user) => user.email === email);
+    const currentUsers = JSON.parse(localStorage.getItem("mockUsers")) || [];
+    const deleted = JSON.parse(localStorage.getItem("deletedMockUsers")) || [];
+    const targetUser = currentUsers.find((user) => user.emailAddress === email);
 
-    if (targetDriver) {
+    if (targetUser) {
       const nextDeleted = [
-        ...deleted.filter((driver) => driver.email !== email),
+        ...deleted.filter((user) => user.emailAddress !== email),
         {
-          ...targetDriver,
+          ...targetUser,
           deletedAt: new Date().toISOString(),
         },
       ];
-      localStorage.setItem("deletedDrivers", JSON.stringify(nextDeleted));
+      localStorage.setItem("deletedMockUsers", JSON.stringify(nextDeleted));
     }
 
-    const nextUsers = users.filter((user) => user.email !== email);
-    localStorage.setItem("users", JSON.stringify(nextUsers));
+    const nextUsers = currentUsers.filter((user) => user.emailAddress !== email);
+    localStorage.setItem("mockUsers", JSON.stringify(nextUsers));
 
-    loadApprovedDrivers();
-    loadDeletedDrivers();
+    loadUsers();
+    loadDeletedUsers();
   };
 
   const handleRestore = (email) => {
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-    const deleted = JSON.parse(localStorage.getItem("deletedDrivers")) || [];
+    const currentUsers = JSON.parse(localStorage.getItem("mockUsers")) || [];
+    const deleted = JSON.parse(localStorage.getItem("deletedMockUsers")) || [];
 
-    const restoreTarget = deleted.find((driver) => driver.email === email);
+    const restoreTarget = deleted.find((user) => user.emailAddress === email);
     if (!restoreTarget) return;
 
     const nextUsers = [
-      ...users.filter((user) => user.email !== email),
-      {
-        ...restoreTarget,
-        driverApprovalStatus: "approved",
-      },
+      ...currentUsers.filter((user) => user.emailAddress !== email),
+      restoreTarget,
     ];
 
-    const nextDeleted = deleted.filter((driver) => driver.email !== email);
+    const nextDeleted = deleted.filter((user) => user.emailAddress !== email);
 
-    localStorage.setItem("users", JSON.stringify(nextUsers));
-    localStorage.setItem("deletedDrivers", JSON.stringify(nextDeleted));
+    localStorage.setItem("mockUsers", JSON.stringify(nextUsers));
+    localStorage.setItem("deletedMockUsers", JSON.stringify(nextDeleted));
 
-    loadApprovedDrivers();
-    loadDeletedDrivers();
+    loadUsers();
+    loadDeletedUsers();
   };
 
-  const activeList = showDeleted ? deletedDrivers : approvedDrivers;
+  const activeList = showDeleted ? deletedUsers : users;
 
-  const filteredDrivers = activeList.filter((driver) => {
+  const filteredUsers = activeList.filter((user) => {
     const keyword = searchText.trim().toLowerCase();
     if (!keyword) return true;
-    return (driver.fullName || "").toLowerCase().includes(keyword);
+    return (
+      (user.userId || "").toLowerCase().includes(keyword) ||
+      (user.fullName || "").toLowerCase().includes(keyword) ||
+      (user.emailAddress || "").toLowerCase().includes(keyword)
+    );
   });
 
     return (
@@ -101,7 +116,7 @@ export default function ManageUser() {
               <main className="flex-1 px-6 md:px-10 mt-2 md:mt-0 pt-10">
                 
                 {/* Header */}
-                <h2 className="text-3xl font-extrabold mb-2 flex">
+                <h2 className="text-3xl font-extrabold mb-6 flex">
                     Manage Users
                   </h2>
                   <div className="flex gap-4">
@@ -119,8 +134,8 @@ export default function ManageUser() {
             }}
           >
             {showDeleted
-              ? `View Approved (${approvedDrivers.length})`
-              : `View Deleted (${deletedDrivers.length})`}
+              ? `View Active (${users.length})`
+              : `View Deleted (${deletedUsers.length})`}
           </button>
           
         </div>
@@ -129,51 +144,40 @@ export default function ManageUser() {
                   <table className="w-full my-6 bg-white rounded-xl overflow-hidden">
           <thead>
             <tr className="text-left text-sm text-gray-500 border-b">
-              <th className="p-4">Driver</th>
-              <th className="p-4">Approval Status</th>
+              <th className="p-4">User ID</th>
+              <th className="p-4">User</th>
+              <th className="p-4 flex items-center justify-center">City</th>
               <th className="p-4">Rating</th>
-              <th className="p-4">Ride</th>
-              <th className="p-4">Income</th>
+              <th className="p-4">Requests</th>
+              <th className="p-4">Phone</th>
               <th className="p-4">Action</th>
             </tr>
           </thead>
           <tbody>
-            {filteredDrivers.length === 0 ? (
+            {filteredUsers.length === 0 ? (
               <tr>
-                <td colSpan={6} className="p-6 text-gray-500">
-                  {showDeleted ? "No deleted drivers found." : "No approved drivers found."}
+                <td colSpan={7} className="p-6 text-gray-500">
+                  {showDeleted ? "No deleted users found." : "No users found."}
                 </td>
               </tr>
             ) : (
-              filteredDrivers.map((driver) => (
-                <tr key={driver.email} className="border-b last:border-0">
+              filteredUsers.map((user) => (
+                <tr key={user.userId || user.emailAddress} className="border-b last:border-0">
+                  <td className="p-4 font-semibold text-[#4C3A78]">{user.userId || "-"}</td>
                   <td className="p-4">
-                    <p className="font-semibold flex">{driver.fullName || "-"}</p>
-                    <p className="text-sm text-gray-500 flex">{driver.email || "-"}</p>
+                    <p className="font-semibold flex">{user.fullName || "-"}</p>
+                    <p className="text-sm text-gray-500 flex">{user.emailAddress || "-"}</p>
                   </td>
-                  <td className="p-4">
-                    <span className={`px-2 py-1 rounded text-xs ${showDeleted ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"}`}>
-                      {showDeleted ? "deleted" : (driver.driverApprovalStatus || "pending")}
-                    </span>
-                  </td>
-                  <td className="p-4">{driver.rating}</td>
-                  <td className="p-4">{driver.rides}</td>
-                  <td className="p-4">฿ {Number(driver.income || 0).toLocaleString()}</td>
+                  <td className="p-4">{user.city || "-"}</td>
+                  <td className="p-4">{user.rating ?? "-"}</td>
+                  <td className="p-4">{user.request ?? 0}</td>
+                  <td className="p-4">{user.phoneNumber || "-"}</td>
                   <td className="p-4">
                     <div className="flex gap-2">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          navigate(`/admin/profile?email=${encodeURIComponent(driver.email)}`)
-                        }
-                        className="px-3 py-1 rounded border border-purple-300 text-purple-700 hover:bg-purple-50"
-                      >
-                        See Profile
-                      </button>
                       {!showDeleted && (
                         <button
                           type="button"
-                          onClick={() => handleDelete(driver.email)}
+                          onClick={() => handleDelete(user.emailAddress)}
                           className="px-3 py-1 rounded border border-red-300 text-red-600 hover:bg-red-50"
                         >
                           Delete
@@ -182,7 +186,7 @@ export default function ManageUser() {
                       {showDeleted && (
                         <button
                           type="button"
-                          onClick={() => handleRestore(driver.email)}
+                          onClick={() => handleRestore(user.emailAddress)}
                           className="px-3 py-1 rounded border border-green-300 text-green-700 hover:bg-green-50"
                         >
                           Restore

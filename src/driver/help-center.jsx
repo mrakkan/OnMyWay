@@ -134,12 +134,10 @@ export default function HelpCenter() {
                 </div>
                 <div>
                   <p className="font-semibold text-[#412B72] leading-tight">Admin Support</p>
-                  <p className="text-xs text-[#8A7CA8]">ตอบกลับอัตโนมัติ (mock)</p>
+                  <p className="text-xs text-[#8A7CA8] flex">ตอบกลับอัตโนมัติ</p>
                 </div>
               </div>
-              <span className="text-xs px-2.5 py-1 rounded-full bg-green-100 text-green-700 border border-green-200">
-                Online
-              </span>
+              
             </div>
 
             <div
@@ -165,13 +163,7 @@ export default function HelpCenter() {
                           : "bg-white text-[#2D1F4D] rounded-bl-sm border-[#E7DDF8]"
                       }`}
                     >
-                      <span
-                        className={`absolute bottom-2 h-3 w-3 rotate-45 ${
-                          isDriver
-                            ? "-right-1 bg-[#5B3EA2] border-r border-b border-[#4D338B]"
-                            : "-left-1 bg-white border-l border-b border-[#E7DDF8]"
-                        }`}
-                      />
+                      
                       {message.image && (
                         <img
                           src={message.image}
@@ -179,8 +171,8 @@ export default function HelpCenter() {
                           className="w-full max-w-[280px] max-h-60 object-cover rounded-xl mb-2 border border-white/40"
                         />
                       )}
-                      {message.text && <p className="text-sm leading-relaxed">{message.text}</p>}
-                      <p className={`text-[11px] mt-2 ${isDriver ? "text-purple-100" : "text-[#6B5B8F]"}`}>
+                      {message.text && <p className="text-sm leading-relaxed text-left">{message.text}</p>}
+                      <p className={`text-[11px] mt-2 ${isDriver ? "text-purple-100" : "text-[#6B5B8F]"} flex items-center gap-1`}>
                         {isDriver ? "คุณ" : "admin"} • {message.time}
                       </p>
                     </div>
@@ -237,20 +229,20 @@ export default function HelpCenter() {
                   onClick={() => fileInputRef.current?.click()}
                   className="px-4 py-3 rounded-xl border border-[#DCCEFF] bg-white text-[#5E3FA3] font-semibold hover:bg-[#F8F3FB] transition"
                 >
-                  + รูป
+                    <span className="material-symbols-outlined">attach_file</span>
                 </button>
                 <input
                   type="text"
                   value={inputText}
                   onChange={(event) => setInputText(event.target.value)}
                   placeholder="พิมพ์ข้อความถึงแอดมิน เช่น user ลืมของ..."
-                  className="flex-1 rounded-xl border border-[#E6DBFA] px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-[#9A84D9]"
+                  className="flex-1 rounded-xl border border-[#E6DBFA] px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-[#9A84D9] md:w-auto w-full"
                 />
                 <button
                   type="submit"
                   className="px-5 py-3 rounded-xl bg-[#5B3EA2] text-white font-semibold hover:bg-[#4f348d] transition shadow-sm"
                 >
-                  ส่ง
+                  <span className="material-symbols-outlined">send</span>
                 </button>
               </div>
             </form>

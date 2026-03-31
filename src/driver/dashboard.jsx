@@ -55,7 +55,7 @@ export default function Dashboard() {
         </div>
 
         {/* Requests */}
-        <div className="bg-gray-100 p-6 rounded-xl">
+        <div className="bg-gray-100 p-6 rounded-xl mb-10">
           <h2 className="text-xl font-bold mb-4 flex items-center">
             <span className="material-symbols-outlined  mr-2">
                 history
@@ -63,7 +63,7 @@ export default function Dashboard() {
             Incoming History
           </h2>
 
-          <div className="space-y-4 overflow-y-auto max-h-[300px] pr-2">
+          <div className="space-y-4 overflow-y-auto max-h-[300px] pr-2 ">
             <RequestCard name="Martha Jenkins" time="10:30 AM" incoming="30" date="2023-10-01" rate={5} />
             <RequestCard name="Robert Chen" time="01:15 PM" incoming="25" date="2023-10-01" rate={4} />
             <RequestCard name="George Miller" time="04:45 PM" incoming="40" date="2023-10-01" rate={5} />
