@@ -1,0 +1,102 @@
+[
+  {
+    "id": "margaret-wilson",
+    "name": "Margaret Wilson",
+    "price": 15,
+    "rating": 4.9,
+    "rides": 128,
+    "bio": "I enjoy helping neighbors reach their medical appointments safely. I drive a spacious SUV with easy entry and exit.",
+    "avatarLabel": "MW",
+    "avatarTone": "from-rose-200 to-amber-200"
+  },
+  {
+    "id": "robert-chen",
+    "name": "Robert Chen",
+    "price": 12,
+    "rating": 4.7,
+    "rides": 84,
+    "bio": "Retired teacher who loves conversation. I am CPR certified and very patient. I can help with groceries too!",
+    "avatarLabel": "RC",
+    "avatarTone": "from-slate-300 to-slate-500"
+  },
+  {
+    "id": "elena-rodriguez",
+    "name": "Elena Rodriguez",
+    "price": 18,
+    "rating": 5,
+    "rides": 210,
+    "bio": "Bilingual driver with 10 years of professional caregiving experience. My vehicle is wheelchair accessible.",
+    "avatarLabel": "ER",
+    "avatarTone": "from-yellow-200 to-orange-200"
+  },
+  {
+    "id": "arthur-sterling",
+    "name": "Arthur Sterling",
+    "price": 14,
+    "rating": 4.8,
+    "rides": 56,
+    "bio": "Very punctual and reliable. I know all the local hospital shortcuts. Happy to wait during your appointment.",
+    "avatarLabel": "AS",
+    "avatarTone": "from-cyan-300 to-sky-500"
+  },
+  {
+    "id": "nora-bennett",
+    "name": "Nora Bennett",
+    "price": 13,
+    "rating": 4.6,
+    "rides": 73,
+    "bio": "Friendly neighborhood volunteer with a compact SUV. I can assist with folding wheelchairs and light shopping bags.",
+    "avatarLabel": "NB",
+    "avatarTone": "from-lime-200 to-emerald-300"
+  },
+  {
+    "id": "samir-patel",
+    "name": "Samir Patel",
+    "price": 16,
+    "rating": 4.9,
+    "rides": 162,
+    "bio": "Former EMT with calm driving habits and strong safety focus. I am happy to wait during short appointments.",
+    "avatarLabel": "SP",
+    "avatarTone": "from-indigo-200 to-blue-300"
+  },
+  {
+    "id": "claire-thompson",
+    "name": "Claire Thompson",
+    "price": 11,
+    "rating": 4.5,
+    "rides": 48,
+    "bio": "Patient and dependable driver who enjoys helping seniors stay active. Available for regular weekly routes.",
+    "avatarLabel": "CT",
+    "avatarTone": "from-pink-200 to-rose-300"
+  },
+  {
+    "id": "david-kim",
+    "name": "David Kim",
+    "price": 17,
+    "rating": 4.8,
+    "rides": 119,
+    "bio": "Reliable companion driver familiar with local clinics and hospitals. Comfortable vehicle with easy step-in height.",
+    "avatarLabel": "DK",
+    "avatarTone": "from-teal-200 to-cyan-300"
+  },
+  {
+    "id": "patricia-gomez",
+    "name": "Patricia Gomez",
+    "price": 19,
+    "rating": 5,
+    "rides": 241,
+    "bio": "Bilingual caregiver-driver with years of elder care experience. Great with appointment day coordination.",
+    "avatarLabel": "PG",
+    "avatarTone": "from-amber-200 to-orange-300"
+  },
+  {
+    "id": "leonard-brooks",
+    "name": "Leonard Brooks",
+    "price": 12,
+    "rating": 4.7,
+    "rides": 95,
+    "bio": "Retired postal worker who values punctuality and clear communication. Happy to help with door-to-door support.",
+    "avatarLabel": "LB",
+    "avatarTone": "from-slate-200 to-zinc-400"
+  }
+]

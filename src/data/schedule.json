@@ -1,0 +1,59 @@
+{
+  "currentStatus": {
+    "status": "Accepted",
+    "reqId": "#EC-8821",
+    "pickup": "1240 Oakwood Medical Center",
+    "destination": "Home (772 Willow Lane)",
+    "driver": {
+      "name": "Robert Miller",
+      "rating": 5,
+      "avatar": "https://i.pravatar.cc/150?u=robert"
+    }
+  },
+  "upcomingTravels": [
+    {
+      "id": 1,
+      "date": "TOMORROW, 10:30 AM",
+      "status": "Pending",
+      "title": "Physical Therapy",
+      "location": "Central Wellness Hub",
+      "borderStyle": "yellow"
+    },
+    {
+      "id": 2,
+      "date": "FRIDAY, 2:00 PM",
+      "status": "Accepted",
+      "title": "Grocery Run",
+      "location": "Whole Foods Market",
+      "borderStyle": "purple"
+    }
+  ],
+  "monthlySummary": {
+    "ridesCompleted": 12,
+    "lateArrivals": 0,
+    "standing": "Premier Care"
+  },
+  "recentHistory": [
+    {
+      "id": 1,
+      "title": "Family Visit",
+      "status": "Completed • 4.2 miles",
+      "date": "Monday",
+      "type": "success"
+    },
+    {
+      "id": 2,
+      "title": "Library Trip",
+      "status": "Cancelled by you",
+      "date": "Aug 12",
+      "type": "cancelled"
+    },
+    {
+      "id": 3,
+      "title": "Routine Checkup",
+      "status": "Completed • 2.8 miles",
+      "date": "Aug 10",
+      "type": "success"
+    }
+  ]
+}
