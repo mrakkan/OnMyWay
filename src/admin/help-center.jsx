@@ -7,74 +7,105 @@ const getCurrentTime = () =>
     minute: "2-digit",
   });
 
-const quickPrompts = [
-  "มีคนขับแจ้งปัญหาระบบ",
-  "ผู้ใช้ร้องเรียนการเดินทาง",
-  "ขอคู่มืออนุมัติคนขับ",
+const mockDriverChats = [
+  {
+    driverId: "DRV001",
+    driverName: "David Miller",
+    status: "online",
+    messages: [
+      {
+        id: 1,
+        role: "driver",
+        text: "สวัสดีครับ แอดมิน ผู้ใช้ลืมของไว้บนรถครับ",
+        time: "09:12",
+      },
+      {
+        id: 2,
+        role: "admin",
+        text: "รับทราบค่ะ กรุณาแจ้งเลขงานและสถานที่รับผู้ใช้ เดี๋ยวแอดมินประสานต่อให้ค่ะ",
+        time: "09:13",
+      },
+    ],
+  },
+  {
+    driverId: "DRV002",
+    driverName: "Anna Lee",
+    status: "online",
+    messages: [
+      {
+        id: 1,
+        role: "driver",
+        text: "รายได้รอบเมื่อวานยังไม่เข้าเลยค่ะ",
+        time: "10:40",
+      },
+    ],
+  },
+  {
+    driverId: "DRV003",
+    driverName: "Chris Wong",
+    status: "offline",
+    messages: [
+      {
+        id: 1,
+        role: "driver",
+        text: "ขอสอบถามวิธีแก้ไขเอกสารที่ถูก reject ครับ",
+        time: "08:55",
+      },
+    ],
+  },
 ];
 
-const createBotReply = (messageText) => {
-  const text = messageText.toLowerCase();
-
-  if (text.includes("คนขับ") || text.includes("driver")) {
-    return "รับเรื่องแล้วค่ะ แนะนำให้ตรวจสถานะเอกสารในหน้า Driver Request และแจ้งผลอนุมัติให้คนขับทราบ";
-  }
-
-  if (text.includes("ผู้ใช้") || text.includes("user") || text.includes("ร้องเรียน")) {
-    return "รับทราบค่ะ กรุณาระบุเลขงานและเวลาที่เกิดเหตุ เพื่อให้ทีมแอดมินตรวจสอบย้อนหลังได้เร็วขึ้น";
-  }
-
-  if (text.includes("อนุมัติ") || text.includes("approve")) {
-    return "สามารถจัดการได้ที่หน้า Manage Driver และ Driver Request หากมีเอกสารไม่ครบระบบจะแจ้งสถานะให้ทันที";
-  }
-
-  return "ระบบช่วยเหลือแอดมินรับเรื่องแล้วค่ะ หากต้องการส่งต่อทีมเทคนิค กรุณาแนบรายละเอียดปัญหาเพิ่มเติม";
-};
-
 export default function AdminHelpCenter() {
-  const [messages, setMessages] = React.useState([
-    {
-      id: 1,
-      role: "bot",
-      text: "สวัสดีค่ะ Admin Support พร้อมช่วยเหลือการจัดการระบบ แจ้งปัญหาได้เลย",
-      time: getCurrentTime(),
-    },
-  ]);
   const [inputText, setInputText] = React.useState("");
-  const nextIdRef = React.useRef(2);
+  const [selectedDriverId, setSelectedDriverId] = React.useState(mockDriverChats[0].driverId);
+  const [chatThreads, setChatThreads] = React.useState(mockDriverChats);
   const messagesContainerRef = React.useRef(null);
+
+  const selectedThread =
+    chatThreads.find((thread) => thread.driverId === selectedDriverId) || chatThreads[0];
 
   React.useEffect(() => {
     if (!messagesContainerRef.current) return;
     messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-  }, [messages]);
+  }, [selectedDriverId, chatThreads]);
 
   const handleSend = (event) => {
     event.preventDefault();
-    const trimmed = inputText.trim();
-    if (!trimmed) return;
+    const trimmedText = inputText.trim();
+    if (!trimmedText) return;
 
-    const userMessage = {
-      id: nextIdRef.current,
+    const nextMessage = {
+      id: Date.now(),
       role: "admin",
-      text: trimmed,
+      text: trimmedText,
       time: getCurrentTime(),
     };
-    nextIdRef.current += 1;
 
-    const botMessage = {
-      id: nextIdRef.current,
-      role: "bot",
-      text: createBotReply(trimmed),
-      time: getCurrentTime(),
-    };
-    nextIdRef.current += 1;
+    setChatThreads((prev) =>
+      prev.map((thread) =>
+        thread.driverId === selectedDriverId
+          ? { ...thread, messages: [...thread.messages, nextMessage] }
+          : thread
+      )
+    );
 
-    setMessages((prev) => [...prev, userMessage]);
     setInputText("");
 
     window.setTimeout(() => {
-      setMessages((prev) => [...prev, botMessage]);
+      const driverAutoReply = {
+        id: Date.now() + 1,
+        role: "driver",
+        text: "ขอบคุณครับ",
+        time: getCurrentTime(),
+      };
+
+      setChatThreads((prev) =>
+        prev.map((thread) =>
+          thread.driverId === selectedDriverId
+            ? { ...thread, messages: [...thread.messages, driverAutoReply] }
+            : thread
+        )
+      );
     }, 500);
   };
 
@@ -85,84 +116,113 @@ export default function AdminHelpCenter() {
       <div className="flex-1 flex flex-col h-screen overflow-y-auto">
         <main className="flex-1 px-6 md:px-10 mt-2 md:mt-0 pt-10 pb-10">
           <h2 className="text-3xl font-extrabold mb-2 flex">Help Center</h2>
-          <p className="text-gray-500 mb-6 flex">Admin support chat and quick guidance</p>
+          <p className="text-gray-500 mb-6 flex">Driver to Admin conversations</p>
 
           <section className="rounded-3xl border border-[#E9DEF8] bg-white shadow-xl overflow-hidden">
-            <div className="px-5 py-4 border-b border-[#EFE4FF] bg-[#F8F4FF] flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-[#5E3FA3] text-white flex items-center justify-center font-bold shadow-sm">
-                A
-              </div>
-              <div>
-                <p className="font-semibold text-[#412B72] leading-tight">Admin Support Assistant</p>
-                <p className="text-xs text-[#8A7CA8]">ตอบกลับอัตโนมัติ</p>
-              </div>
-            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] min-h-[620px]">
+              <aside className="border-r border-[#EFE4FF] bg-[#FBF9FF]">
+                <div className="px-4 py-4 border-b border-[#EFE4FF]">
+                  <p className="font-semibold text-[#412B72]">Drivers Inbox</p>
+                  <p className="text-xs text-[#8A7CA8] mt-1">เลือกคนขับเพื่อดูบทสนทนา</p>
+                </div>
 
-            <div ref={messagesContainerRef} className="h-[460px] overflow-y-auto p-5 space-y-4 bg-[#FCFAFF]">
-              {messages.map((message) => {
-                const isAdminMessage = message.role === "admin";
-                return (
-                  <div
-                    key={message.id}
-                    className={`flex items-end gap-2 ${isAdminMessage ? "justify-end" : "justify-start"}`}
-                  >
-                    {!isAdminMessage && (
-                      <div className="h-8 w-8 rounded-full bg-[#5E3FA3] text-white text-xs font-bold flex items-center justify-center shrink-0">
-                        A
-                      </div>
-                    )}
+                <div className="p-3 space-y-2">
+                  {chatThreads.map((thread) => {
+                    const lastMessage = thread.messages[thread.messages.length - 1];
+                    const isActive = thread.driverId === selectedDriverId;
 
-                    <div
-                      className={`max-w-[85%] md:max-w-[70%] rounded-2xl px-4 py-3 shadow-sm border ${
-                        isAdminMessage
-                          ? "bg-[#5B3EA2] text-white rounded-br-sm border-[#4D338B]"
-                          : "bg-white text-[#2D1F4D] rounded-bl-sm border-[#E7DDF8]"
-                      }`}
-                    >
-                      <p className="text-sm leading-relaxed text-left">{message.text}</p>
-                      <p
-                        className={`text-[11px] mt-2 ${
-                          isAdminMessage ? "text-purple-100" : "text-[#6B5B8F]"
-                        } flex items-center gap-1`}
+                    return (
+                      <button
+                        key={thread.driverId}
+                        type="button"
+                        onClick={() => setSelectedDriverId(thread.driverId)}
+                        className={`w-full text-left rounded-xl p-3 border transition ${
+                          isActive
+                            ? "bg-[#EFE6FF] border-[#C9B6F5]"
+                            : "bg-white border-[#ECE3FB] hover:bg-[#F7F2FF]"
+                        }`}
                       >
-                        {isAdminMessage ? "คุณ" : "support"} - {message.time}
-                      </p>
-                    </div>
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="font-semibold text-[#34225F]">{thread.driverName}</p>
+                          
+                        </div>
+                        <p className="text-xs text-[#7D6CA7] mt-1">{thread.driverId}</p>
+                        <p className="text-xs text-gray-500 mt-1 truncate">{lastMessage?.text || "No messages"}</p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </aside>
+
+              <div className="flex flex-col">
+                <div className="px-5 py-4 border-b border-[#EFE4FF] bg-[#F8F4FF] flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-[#5E3FA3] text-white flex items-center justify-center font-bold shadow-sm">
+                    {selectedThread?.driverName?.charAt(0) || "D"}
                   </div>
-                );
-              })}
-            </div>
+                  <div>
+                    <p className="font-semibold text-[#412B72] leading-tight">{selectedThread?.driverName}</p>
+                    <p className="text-xs text-[#8A7CA8]">{selectedThread?.driverId}</p>
+                  </div>
+                </div>
 
-            <form onSubmit={handleSend} className="p-4 border-t border-[#EFE4FF] bg-white">
-              <div className="mb-3 flex flex-wrap gap-2">
-                {quickPrompts.map((prompt) => (
-                  <button
-                    key={prompt}
-                    type="button"
-                    onClick={() => setInputText(prompt)}
-                    className="px-3 py-1.5 rounded-full text-xs font-semibold bg-[#F3EFFF] text-[#5A3EA2] border border-[#E4D8FF] hover:bg-[#EADFff] transition"
-                  >
-                    {prompt}
-                  </button>
-                ))}
-              </div>
-
-              <div className="flex gap-2 md:gap-3">
-                <input
-                  type="text"
-                  value={inputText}
-                  onChange={(event) => setInputText(event.target.value)}
-                  placeholder="พิมพ์ข้อความถึงระบบช่วยเหลือแอดมิน..."
-                  className="flex-1 rounded-xl border border-[#E6DBFA] px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-[#9A84D9]"
-                />
-                <button
-                  type="submit"
-                  className="px-5 py-3 rounded-xl bg-[#5B3EA2] text-white font-semibold hover:bg-[#4f348d] transition shadow-sm"
+                <div
+                  ref={messagesContainerRef}
+                  className="h-[480px] overflow-y-auto p-5 space-y-4 bg-[#FCFAFF]"
                 >
-                  <span className="material-symbols-outlined">send</span>
-                </button>
+                  {selectedThread?.messages?.map((message) => {
+                    const isAdminMessage = message.role === "admin";
+
+                    return (
+                      <div
+                        key={message.id}
+                        className={`flex items-end gap-2 ${isAdminMessage ? "justify-end" : "justify-start"}`}
+                      >
+                        {!isAdminMessage && (
+                          <div className="h-8 w-8 rounded-full bg-[#5E3FA3] text-white text-xs font-bold flex items-center justify-center shrink-0">
+                            D
+                          </div>
+                        )}
+
+                        <div
+                          className={`max-w-[85%] md:max-w-[70%] rounded-2xl px-4 py-3 shadow-sm border ${
+                            isAdminMessage
+                              ? "bg-[#5B3EA2] text-white rounded-br-sm border-[#4D338B]"
+                              : "bg-white text-[#2D1F4D] rounded-bl-sm border-[#E7DDF8]"
+                          }`}
+                        >
+                          <p className="text-sm leading-relaxed text-left">{message.text}</p>
+                          <p
+                            className={`text-[11px] mt-2 ${
+                              isAdminMessage ? "text-purple-100" : "text-[#6B5B8F]"
+                            } flex items-center gap-1`}
+                          >
+                            {isAdminMessage ? "admin" : "driver"} - {message.time}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <form onSubmit={handleSend} className="p-4 border-t border-[#EFE4FF] bg-white">
+                  <div className="flex gap-2 md:gap-3">
+                    <input
+                      type="text"
+                      value={inputText}
+                      onChange={(event) => setInputText(event.target.value)}
+                      placeholder="พิมพ์ข้อความตอบกลับคนขับ..."
+                      className="flex-1 rounded-xl border border-[#E6DBFA] px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-[#9A84D9]"
+                    />
+                    <button
+                      type="submit"
+                      className="px-5 py-3 rounded-xl bg-[#5B3EA2] text-white font-semibold hover:bg-[#4f348d] transition shadow-sm"
+                    >
+                      <span className="material-symbols-outlined">send</span>
+                    </button>
+                  </div>
+                </form>
               </div>
-            </form>
+            </div>
           </section>
         </main>
       </div>

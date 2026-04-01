@@ -113,10 +113,10 @@ export default function SeeProfile() {
 
             <div className="flex-1 flex flex-col h-screen overflow-y-auto">
                 <header className="pt-5 px-8 flex items-center justify-end">
-                    <button
+                        <button
                             type="button"
                             onClick={() => navigate(-1)}
-                            className="px-4 py-2 rounded-lg border border-purple-300 text-purple-700 hover:bg-purple-50 transition mb-6 flex items-center gap-1 w-max"
+                            className="px-4 py-2 rounded-lg border border-gray-300 text-purple-700 hover:bg-purple-50 transition mb-6 flex items-center gap-1 w-max"
                         >
                             ย้อนกลับ
                         </button>
@@ -142,7 +142,7 @@ export default function SeeProfile() {
 
                         {/* Form */}
                         <section className="col-span-12 lg:col-span-7 space-y-4 mb-10 pointer-events-none">
-                            <div className="bg-[#FFFFFF] rounded-2xl p-8 shadow-sm border border-outline-variant/30">
+                            <div className="bg-[#FFFFFF] rounded-2xl p-8 shadow-sm border border-gray-300">
 
                                 {/* Title */}
                                 <div className="mb-8">
@@ -170,7 +170,7 @@ export default function SeeProfile() {
                                                 name="price"
                                                 value={form.price}
                                                 onChange={handleChange}
-                                                className="w-full pl-10 pr-4 py-3 border rounded-xl bg-gray-100"
+                                                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl bg-gray-100"
                                             />
                                         </div>
                                     </div>
@@ -184,7 +184,7 @@ export default function SeeProfile() {
                                             name="area"
                                             value={form.area}
                                             onChange={handleChange}
-                                            className="w-full py-3 px-4 border rounded-xl bg-gray-100"
+                                            className="w-full py-3 px-4 border border-gray-300 rounded-xl bg-gray-100"
                                         >
                                             <option>กรุงเทพมหานคร</option>
                                             <option>นนทบุรี</option>
@@ -202,7 +202,7 @@ export default function SeeProfile() {
                                             name="experience"
                                             value={form.experience}
                                             onChange={handleChange}
-                                            className="w-full py-3 px-4 border rounded-xl bg-gray-100"
+                                            className="w-full py-3 px-4 border border-gray-300 rounded-xl bg-gray-100"
                                         />
                                     </div>
 
@@ -215,7 +215,7 @@ export default function SeeProfile() {
                                             name="vehicle"
                                             value={form.vehicle}
                                             onChange={handleChange}
-                                            className="w-full py-3 px-4 border rounded-xl bg-gray-100"
+                                            className="w-full py-3 px-4 border border-gray-300 rounded-xl bg-gray-100"
                                         >
                                             <option>Sedan</option>
                                             <option>Van</option>
@@ -258,7 +258,7 @@ export default function SeeProfile() {
                                             name="startTime"
                                             value={form.startTime}
                                             onChange={handleChange}
-                                            className="w-full py-3 px-4 border rounded-xl bg-gray-100"
+                                            className="w-full py-3 px-4 border border-gray-300 rounded-xl bg-gray-100"
                                         />
                                     </div>
 
@@ -272,7 +272,7 @@ export default function SeeProfile() {
                                             name="endTime"
                                             value={form.endTime}
                                             onChange={handleChange}
-                                            className="w-full py-3 px-4 border rounded-xl bg-gray-100"
+                                            className="w-full py-3 px-4 border border-gray-300 rounded-xl bg-gray-100"
                                         />
                                     </div>
 
@@ -286,7 +286,7 @@ export default function SeeProfile() {
                                             name="bio"
                                             value={form.bio}
                                             onChange={handleChange}
-                                            className="w-full p-4 border rounded-xl bg-gray-100"
+                                            className="w-full p-4 border border-gray-300 rounded-xl bg-gray-100"
                                             placeholder="เล่าประสบการณ์ของคุณ..."
                                         />
                                     </div>
@@ -357,7 +357,7 @@ export default function SeeProfile() {
                                             name="fullName"
                                             value={personalForm.fullName}
                                             onChange={handlePersonalChange}
-                                            className="w-full py-3 px-4 border rounded-xl bg-gray-100"
+                                            className="w-full py-3 px-4 border border-gray-300 rounded-xl bg-gray-100"
                                         />
                                     </div>
 
@@ -370,7 +370,7 @@ export default function SeeProfile() {
                                             name="dob"
                                             value={personalForm.dob}
                                             onChange={handlePersonalChange}
-                                            className="w-full py-3 px-4 border rounded-xl bg-gray-100"
+                                            className="w-full py-3 px-4 border border-gray-300 rounded-xl bg-gray-100"
                                         />
                                     </div>
 
@@ -383,7 +383,7 @@ export default function SeeProfile() {
                                             name="phone"
                                             value={personalForm.phone}
                                             onChange={handlePersonalChange}
-                                            className="w-full py-3 px-4 border rounded-xl bg-gray-100"
+                                            className="w-full py-3 px-4 border border-gray-300 rounded-xl bg-gray-100"
                                         />
                                     </div>
 
@@ -396,7 +396,7 @@ export default function SeeProfile() {
                                             name="nationalId"
                                             value={personalForm.nationalId}
                                             onChange={handlePersonalChange}
-                                            className="w-full py-3 px-4 border rounded-xl bg-gray-100"
+                                            className="w-full py-3 px-4 border border-gray-300 rounded-xl bg-gray-100"
                                         />
                                     </div>
 
@@ -409,7 +409,7 @@ export default function SeeProfile() {
                                             name="email"
                                             value={personalForm.email}
                                             onChange={handlePersonalChange}
-                                            className="w-full py-3 px-4 border rounded-xl bg-gray-100"
+                                            className="w-full py-3 px-4 border border-gray-300 rounded-xl bg-gray-100"
                                         />
                                     </div>
 
@@ -423,7 +423,7 @@ export default function SeeProfile() {
                                             name="vehicleModel"
                                             value={personalForm.vehicleModel}
                                             onChange={handlePersonalChange}
-                                            className="w-full py-3 px-4 border rounded-xl bg-gray-100"
+                                            className="w-full py-3 px-4 border border-gray-300 rounded-xl bg-gray-100"
                                         />
                                     </div>
 
@@ -436,7 +436,7 @@ export default function SeeProfile() {
                                             name="vehicleYear"
                                             value={personalForm.vehicleYear}
                                             onChange={handlePersonalChange}
-                                            className="w-full py-3 px-4 border rounded-xl bg-gray-100"
+                                            className="w-full py-3 px-4 border border-gray-300 rounded-xl bg-gray-100"
                                         />
                                     </div>
                                     </div>

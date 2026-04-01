@@ -126,9 +126,9 @@ export default function ManageDriver() {
         </div>
                   
 
-                  <table className="w-full my-6 bg-white rounded-xl overflow-hidden">
+                  <table className="w-full my-6 bg-white rounded-xl overflow-hidden border border-gray-300">
           <thead>
-            <tr className="text-left text-sm text-gray-500 border-b">
+            <tr className="text-left text-sm text-gray-500 border-b border-gray-300">
               <th className="p-4">Driver</th>
               <th className="p-4">Approval Status</th>
               <th className="p-4">Rating</th>
@@ -137,7 +137,7 @@ export default function ManageDriver() {
               <th className="p-4">Action</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-200">
             {filteredDrivers.length === 0 ? (
               <tr>
                 <td colSpan={6} className="p-6 text-gray-500">
@@ -146,7 +146,7 @@ export default function ManageDriver() {
               </tr>
             ) : (
               filteredDrivers.map((driver) => (
-                <tr key={driver.email} className="border-b last:border-0">
+                <tr key={driver.email}>
                   <td className="p-4">
                     <p className="font-semibold flex">{driver.fullName || "-"}</p>
                     <p className="text-sm text-gray-500 flex">{driver.email || "-"}</p>

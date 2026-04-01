@@ -12,6 +12,7 @@ import AdminLogin from './admin/login.jsx'
 import ManageUser from './admin/manage-user.jsx'
 import ManageDriver from './admin/mange-driver.jsx'
 import SeeProfile from './admin/profile.jsx'
+import UserDetail from './admin/user-detail.jsx'
 import DriverDashboard from './driver/dashboard.jsx'
 import DriverPassengerChatPage from './driver/chat-passenger.jsx'
 import DriverHelpCenter from './driver/help-center.jsx'
@@ -184,6 +185,7 @@ function App() {
         <Route path="/admin/profile" element={<SeeProfile />} />
         <Route path="/admin/manage-user" element={<ManageUser />} />
         <Route path="/admin/help-center" element={<AdminHelpCenter />} />
+        <Route path="/admin/users/:id" element={<UserDetail />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

@@ -1,6 +1,7 @@
 import React from "react";
 import AdminSidebar from "./sidebar";
 import mockUsers from "./mock-user.json";
+import { useNavigate } from "react-router-dom";
 
 const ensureUserIds = (list = []) =>
   list.map((user, index) => {
@@ -12,6 +13,7 @@ const ensureUserIds = (list = []) =>
   });
 
 export default function ManageUser() {
+  const navigate = useNavigate();
   const [users, setUsers] = React.useState([]);
   const [deletedUsers, setDeletedUsers] = React.useState([]);
   const [searchText, setSearchText] = React.useState("");
@@ -141,39 +143,45 @@ export default function ManageUser() {
         </div>
                   
 
-                  <table className="w-full my-6 bg-white rounded-xl overflow-hidden">
+                  <table className="w-full my-6 bg-white rounded-xl overflow-hidden border border-gray-300">
           <thead>
-            <tr className="text-left text-sm text-gray-500 border-b">
+            <tr className="text-left text-sm text-gray-500 border-b border-gray-300">
               <th className="p-4">User ID</th>
               <th className="p-4">User</th>
-              <th className="p-4 flex items-center justify-center">City</th>
-              <th className="p-4">Rating</th>
+              <th className="p-4">City</th>
               <th className="p-4">Requests</th>
               <th className="p-4">Phone</th>
               <th className="p-4">Action</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-200">
             {filteredUsers.length === 0 ? (
               <tr>
-                <td colSpan={7} className="p-6 text-gray-500">
+                <td colSpan={6} className="p-6 text-gray-500">
                   {showDeleted ? "No deleted users found." : "No users found."}
                 </td>
               </tr>
             ) : (
               filteredUsers.map((user) => (
-                <tr key={user.userId || user.emailAddress} className="border-b last:border-0">
+                <tr key={user.userId || user.emailAddress}>
                   <td className="p-4 font-semibold text-[#4C3A78]">{user.userId || "-"}</td>
                   <td className="p-4">
                     <p className="font-semibold flex">{user.fullName || "-"}</p>
                     <p className="text-sm text-gray-500 flex">{user.emailAddress || "-"}</p>
                   </td>
                   <td className="p-4">{user.city || "-"}</td>
-                  <td className="p-4">{user.rating ?? "-"}</td>
                   <td className="p-4">{user.request ?? 0}</td>
                   <td className="p-4">{user.phoneNumber || "-"}</td>
                   <td className="p-4">
                     <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => navigate(`/admin/users/${user.userId || user.emailAddress}`)}
+                        
+                        className="px-3 py-1 rounded border border-purple-300 text-purple-700 hover:bg-purple-50"
+                      >
+                        Profile
+                      </button>
                       {!showDeleted && (
                         <button
                           type="button"
