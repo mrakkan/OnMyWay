@@ -136,7 +136,7 @@ export default function DriverSidebar() {
         
             {/* ปุ่มเปิด sidebar (มือถือ) */}
             <span
-                className="fixed  text-primary text-4xl top-5 left-4 cursor-pointer lg:hidden material-symbols-outlined z-50"
+                className="fixed  text-primary text-4xl top-5 left-4 cursor-pointer lg:!hidden material-symbols-outlined z-50"
                 onClick={() => setOpen(true)}
             >
                 menu
@@ -162,7 +162,7 @@ export default function DriverSidebar() {
                         </div>
 
                         {/* ปุ่มปิด (มือถือ) */}
-                        <span className="material-symbols-outlined text-primary cursor-pointer lg:hidden" onClick={() => setOpen(false)}>
+                        <span className="material-symbols-outlined text-primary cursor-pointer lg:!hidden" onClick={() => setOpen(false)}>
                             close
                         </span>
 
