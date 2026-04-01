@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 const WEATHER_CITY = import.meta.env.VITE_WEATHER_CITY || "Bangkok";
@@ -56,6 +56,13 @@ export default function AdminSidebar() {
         year: "numeric",
     });
 
+    const navItemClass = ({ isActive }) =>
+        `p-4 mt-2 flex items-center rounded-xl text-[#64748B] transition ${
+            isActive
+                ? "bg-[#E7E0EB] !text-[#684CB5] font-semibold"
+                : "hover:bg-[#E7E0EB] hover:text-[#684CB5] hover:font-semibold"
+        }`;
+
     return (
         <>
         
@@ -98,36 +105,36 @@ export default function AdminSidebar() {
 
                     {/* Menu */}
                     <div>
-                        <Link to="/admin/dashboard" className="p-4 mt-2 flex items-center rounded-xl hover:bg-[#E7E0EB] text-[#64748B] hover:text-[#684CB5] hover:font-semibold ">
+                        <NavLink to="/admin/dashboard" className={navItemClass}>
                             <span className="material-symbols-outlined">
                                 dashboard
                             </span>
                             <span className="ml-2">Dashboard</span>
-                        </Link>
-                        <Link to="/admin/manage-driver" className="p-4 mt-2 flex items-center rounded-xl hover:bg-[#E7E0EB] text-[#64748B] hover:text-[#684CB5] hover:font-semibold ">
+                        </NavLink>
+                        <NavLink to="/admin/manage-driver" className={navItemClass}>
                             <span className="material-symbols-outlined">
                                 directions_car
                             </span>
                             <span className="ml-2">Manage Driver</span>
-                        </Link>
-                        <Link to="/admin/driver-request" className="p-4 mt-2 flex items-center rounded-xl hover:bg-[#E7E0EB] text-[#64748B] hover:text-[#684CB5] hover:font-semibold ">
+                        </NavLink>
+                        <NavLink to="/admin/driver-request" className={navItemClass}>
                             <span className="material-symbols-outlined">
                                 assignment
                             </span>
                             <span className="ml-2">Driver Request</span>
-                        </Link>
-                        <Link to="/admin/manage-user" className="p-4 mt-2 flex items-center rounded-xl hover:bg-[#E7E0EB] text-[#64748B] hover:text-[#684CB5] hover:font-semibold ">
+                        </NavLink>
+                        <NavLink to="/admin/manage-user" className={navItemClass}>
                             <span className="material-symbols-outlined">
                                 person
                             </span>
                             <span className="ml-2">Manage Users</span>
-                        </Link>
-                        <Link to="/admin/help-center" className="p-4 mt-2 flex items-center rounded-xl hover:bg-[#E7E0EB] text-[#64748B] hover:text-[#684CB5] hover:font-semibold ">
+                        </NavLink>
+                        <NavLink to="/admin/help-center" className={navItemClass}>
                             <span className="material-symbols-outlined">
                                 help
                             </span>
                             <span className="ml-2">Help Center</span>
-                        </Link>
+                        </NavLink>
                     </div>
                 </div>
 
