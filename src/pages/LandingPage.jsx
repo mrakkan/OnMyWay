@@ -37,6 +37,20 @@ const bounceDown = keyframes`
   }
 `
 
+const shimmerSweep = keyframes`
+  0% {
+    transform: translateX(-140%) skewX(-16deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.35;
+  }
+  100% {
+    transform: translateX(220%) skewX(-16deg);
+    opacity: 0;
+  }
+`
+
 function Pattern() {
   return (
     <PatternWrapper>
@@ -671,6 +685,97 @@ const LiveFootnote = styled.p`
   font-weight: 600;
 `
 
+const JoinTeamCard = styled(LivePrimaryCard)`
+  position: relative;
+  overflow: hidden;
+  padding: clamp(26px, 4vw, 42px);
+  border: 2px solid rgba(108, 63, 227, 0.62);
+  background: linear-gradient(145deg, rgba(123, 76, 255, 0.3), rgba(255, 255, 255, 0.56));
+  box-shadow: 0 28px 52px -34px rgba(76, 34, 186, 0.78);
+  animation: ${fadeUp} 780ms ease both;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: -20%;
+    left: 0;
+    width: 35%;
+    height: 140%;
+    background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.42) 45%, transparent 100%);
+    animation: ${shimmerSweep} 3.8s ease-in-out infinite;
+    pointer-events: none;
+  }
+`
+
+const JoinTeamHeader = styled(LiveHeader)`
+  margin-bottom: 0;
+  text-align: left;
+
+  .eyebrow {
+    margin: 0;
+    color: #5f35cd;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.76rem;
+    font-weight: 900;
+  }
+
+  h2 {
+    margin: 12px 0 8px;
+    color: #25154d;
+    font-size: clamp(1.9rem, 3.3vw, 2.9rem);
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    max-width: 16ch;
+  }
+
+  p {
+    margin: 0 0 22px;
+    max-width: 64ch;
+    color: #382863;
+    font-size: clamp(1rem, 1.15vw, 1.14rem);
+    font-weight: 600;
+    line-height: 1.55;
+  }
+
+  button {
+    border: 0;
+    cursor: pointer;
+    border-radius: 999px;
+    padding: 12px 26px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    color: #fff;
+    background: linear-gradient(135deg, #5b31db 0%, #7f51ff 58%, #a56bff 100%);
+    box-shadow: 0 18px 30px -20px rgba(79, 39, 179, 0.9);
+    transition: transform 0.22s ease, box-shadow 0.22s ease, filter 0.22s ease;
+  }
+
+  button:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 22px 34px -20px rgba(79, 39, 179, 0.95);
+    filter: saturate(1.06);
+  }
+
+  button:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  @media (max-width: 760px) {
+    text-align: center;
+
+    h2 {
+      max-width: none;
+    }
+
+    p {
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+`
+
 function getWeatherDescription(code) {
   if (code === 0) {
     return 'Clear Sky'
@@ -817,7 +922,7 @@ export default function LandingPage() {
             staggerDelay={0.17}
             className="font-medium"
           />
-          </Title>
+        </Title>
         <Subtitle>
           Coordinate safe rides for appointments, hospital visits, and daily errands with drivers trained for elder-friendly assistance.
         </Subtitle>
@@ -873,6 +978,19 @@ export default function LandingPage() {
           <StatLabel>Live concierge support</StatLabel>
         </StatCard>
       </Stats>
+
+
+      <JoinTeamCard style={{ margin: '6px auto 56px', maxWidth: '1040px' }}>
+        <JoinTeamHeader>
+          <p className="eyebrow">Join Our Care Team</p>
+          <h2>Drive with purpose and make every trip feel safer.</h2>
+          <p>
+            We are always looking for compassionate drivers who can provide safe, comfortable, and respectful rides for senior passengers.
+          </p>
+          <button type="button" onClick={() => navigate('/driver/login')}>Let's Start the Journey</button>
+        </JoinTeamHeader>
+
+      </JoinTeamCard>
 
       <ScrollHintWrap>
         <ScrollHintButton type="button">
