@@ -1,8 +1,8 @@
 {
   "margaret-wilson": {
-    "name": "Martha Stewart",
+    "name": "Anan Srisuk",
     "subtitle": "Certified Senior Companion & Volunteer",
-    "avatarLabel": "MS",
+    "avatarLabel": "AS",
     "avatarTone": "from-sky-300 to-blue-500",
     "experience": "8 yrs",
     "rating": 4.9,
@@ -29,9 +29,9 @@
     ]
   },
   "robert-chen": {
-    "name": "Robert Chen",
+    "name": "Pimlada Charoen",
     "subtitle": "Retired Teacher & Community Driver",
-    "avatarLabel": "RC",
+    "avatarLabel": "PC",
     "avatarTone": "from-slate-300 to-slate-600",
     "experience": "6 yrs",
     "rating": 4.7,
@@ -53,9 +53,9 @@
     ]
   },
   "elena-rodriguez": {
-    "name": "Elena Rodriguez",
+    "name": "Kritsada Wongchai",
     "subtitle": "Bilingual Care Driver & Mobility Support",
-    "avatarLabel": "ER",
+    "avatarLabel": "KW",
     "avatarTone": "from-yellow-200 to-orange-300",
     "experience": "10 yrs",
     "rating": 5,
@@ -77,9 +77,9 @@
     ]
   },
   "arthur-sterling": {
-    "name": "Arthur Sterling",
+    "name": "Nattaya Saelim",
     "subtitle": "Reliable Hospital Route Specialist",
-    "avatarLabel": "AS",
+    "avatarLabel": "NS",
     "avatarTone": "from-cyan-300 to-sky-500",
     "experience": "7 yrs",
     "rating": 4.8,

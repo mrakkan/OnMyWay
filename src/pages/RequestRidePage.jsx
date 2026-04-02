@@ -405,7 +405,7 @@ export default function RequestRidePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f3eff7] px-4 py-8 sm:px-6 lg:px-8">
+    <div className="px-4 py-8 sm:px-6 lg:px-8 text-slate-800">
       <div className="mx-auto max-w-[1240px]">
         <div className="mb-6">
           <Link to={`/driver/${driverId}`} className="inline-flex items-center gap-2 text-sm font-bold text-violet-700 hover:text-violet-900">
