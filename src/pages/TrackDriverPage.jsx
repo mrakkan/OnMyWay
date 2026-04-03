@@ -20,7 +20,7 @@ const MOCK_ROUTE = [
   [13.7488, 100.5304],
 ]
 
-const DRIVER_NAME = 'David Cooper'
+const DRIVER_NAME = 'Anan Srisuk'
 const VEHICLE = 'Honda Civic • 5กข-998'
 const DRIVER_SPEED_KMH = 28
 const DRIVER_AVATAR = 'https://i.pravatar.cc/200?img=11'
@@ -219,7 +219,6 @@ export default function TrackDriverPage() {
                 onClick={() => navigate(`/chat/${activeChatDriverId}`)}
                 className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-violet-600 px-4 py-3 text-base font-black text-white shadow-[0_12px_24px_-16px_rgba(64,30,128,0.95)] transition hover:bg-violet-700 sm:text-lg lg:text-xl"
               >
-                <Phone className="h-5 w-5" />
                 Chat with Driver
               </button>
             </article>

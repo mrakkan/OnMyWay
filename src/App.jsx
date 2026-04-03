@@ -77,12 +77,14 @@ const DRIVER_MOCK_REQUESTS = [
 
 function RideLayout() {
   const location = useLocation()
+  const isDriverProfileFlow = /^\/driver\/[^/]+(?:\/request)?$/.test(location.pathname)
   const usesSharedWavesBackground =
     location.pathname.startsWith('/find-ride') ||
     location.pathname.startsWith('/schedule') ||
     location.pathname.startsWith('/chat') ||
     location.pathname.startsWith('/driver-chat') ||
-    location.pathname.startsWith('/profile')
+    location.pathname.startsWith('/profile') ||
+    isDriverProfileFlow
 
   return (
     <div className="min-h-screen bg-[#f3eff7]">
